@@ -1,0 +1,156 @@
+<!doctype html>
+<html dir="rtl"><head><meta charset="utf-8">
+<style>
+@font-face{font-family:CT;src:url(CoachTitle.ttf)}
+@font-face{font-family:CB;src:url(CoachBody.ttf)}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:1080px;height:1350px;overflow:hidden;background:#F6F4F1}
+#stage{position:relative;width:1080px;height:1350px;overflow:hidden;perspective:1800px;
+  background:radial-gradient(120% 80% at 85% 0%,#FDDCC4 0%,rgba(253,220,196,0) 55%),radial-gradient(90% 60% at 0% 100%,#FCE3D2 0%,rgba(252,227,210,0) 60%),#F6F4F1}
+.glow{position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none}
+.ring{position:absolute;border-radius:50%;border:10px solid transparent;border-top-color:#F47B3B;border-right-color:rgba(244,123,59,.35);filter:drop-shadow(0 0 18px rgba(244,123,59,.55))}
+.ring.thin{border-width:4px;border-top-color:#F9B48C;border-right-color:transparent}
+.phone{position:absolute;width:470px;height:960px;border-radius:70px;background:#fff;padding:16px;
+  box-shadow:0 80px 120px -50px rgba(140,63,25,.55),0 0 0 2px rgba(255,255,255,.9),inset 0 0 0 1px #eee;transform-style:preserve-3d}
+.phone .scr{position:relative;width:100%;height:100%;border-radius:56px;overflow:hidden;background:#F3F5F8}
+.phone img{position:absolute;inset:0;width:100%;height:auto}
+.phone .notch{position:absolute;top:26px;left:50%;width:120px;height:32px;margin-left:-60px;border-radius:20px;background:#111;z-index:5}
+#cap{position:absolute;left:70px;right:70px;top:880px;text-align:center;padding:30px 34px;border-radius:40px;
+  background:rgba(255,255,255,.72);border:2px solid rgba(255,255,255,.95);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  box-shadow:0 40px 80px -40px rgba(140,63,25,.45)}
+#cap .l1{font-family:CT;font-size:66px;line-height:1.35;color:#1F1A17}
+#cap .l2{font-family:CB;font-size:38px;line-height:1.6;color:#4A423D;margin-top:6px}
+#cap .w{display:inline-block;transition:none}
+#cap .hl{color:#F47B3B}
+#brand{position:absolute;bottom:46px;left:0;right:0;display:flex;align-items:center;justify-content:center;gap:14px}
+#brand img{width:62px;height:62px}
+#brand span{font-family:CT;font-size:44px;color:#1F1A17}
+#end{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;opacity:0}
+#end img{width:260px}
+#end .t1{font-family:CT;font-size:92px;color:#1F1A17}
+#end .t2{font-family:CB;font-size:46px;color:#4A423D}
+#end .t2 b{color:#F47B3B;font-weight:700}
+#end .url{font-family:CB;font-size:40px;color:#F47B3B;padding:16px 36px;border-radius:999px;background:#fff;box-shadow:0 30px 60px -30px rgba(244,123,59,.6);direction:ltr}
+</style></head><body>
+<div id="stage">
+  <div class="glow" id="g1" style="width:700px;height:700px;background:#FCCFB0;top:-200px;right:-200px;opacity:.8"></div>
+  <div class="glow" id="g2" style="width:600px;height:600px;background:#FDE3D0;bottom:-150px;left:-200px;opacity:.9"></div>
+  <div class="ring" id="r1" style="width:380px;height:380px;left:-120px;top:120px"></div>
+  <div class="ring thin" id="r2" style="width:240px;height:240px;left:60px;top:30px"></div>
+  <div class="ring" id="r3" style="width:460px;height:460px;right:-200px;bottom:120px"></div>
+
+  <div class="phone" id="pA"><div class="scr"><div class="notch"></div><img class="a" data-src="coach-home.webp" src="coach-home.webp"><img class="a" data-src="builder.webp" src="builder.webp"><img class="a" data-src="athlete-file.webp" src="athlete-file.webp"></div></div>
+  <div class="phone" id="pB"><div class="scr"><div class="notch"></div><img id="iB" src="athlete-progress.webp"></div></div>
+
+  <div id="cap"><div class="l1" id="c1"></div><div class="l2" id="c2"></div></div>
+
+  <div id="end">
+    <img src="logo-mark.png">
+    <div class="t1">کمک مربی</div>
+    <div class="t2">و این فقط <b>شروعشه…</b></div>
+    <div class="url">app.assistantcoach.ir</div>
+  </div>
+
+  <div id="brand"><img src="logo-mark.png"><span>کمک مربی</span></div>
+</div>
+<script>
+const D = 19.0; // ثانیه
+// زیرنویس‌ها: [شروع، پایان، خط۱، خط۲، واژه‌های برجسته]
+const CAPS = [
+  [0.4, 3.4, "اپلیکیشن کمک مربی", "دستیار دیجیتال مربیان ورزشی", ["کمک", "مربی"]],
+  [3.6, 6.6, "همه‌چیز در یک جا", "شاگردها، برنامه‌ها، پیام‌ها و درآمد", ["یک", "جا"]],
+  [6.8, 9.9, "برنامه بنویس، نه جدول", "حرکت با ویدیو، سوپرست، الگوی آماده", ["برنامه"]],
+  [10.1, 13.4, "با یک نگاه ببین", "شاگردت چقدر پیشرفت کرده!", ["پیشرفت"]],
+  [13.6, 16.6, "مدیریت کمتر،", "مربیگری بیشتر", ["مربیگری", "بیشتر"]],
+];
+const $ = (id) => document.getElementById(id);
+const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
+const ease = (x) => { x = clamp(x); return x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; };
+const out = (x) => 1 - Math.pow(1 - clamp(x), 3);
+const lerp = (a, b, k) => a + (b - a) * k;
+const seg = (t, a, b) => clamp((t - a) / (b - a));
+
+function words(el, text, hl, k) {
+  // ظاهر شدن واژه‌به‌واژه (مثل ویدیوی مرجع)
+  const ws = text.split(" ");
+  const n = ws.length;
+  el.innerHTML = ws.map((w, i) => {
+    const p = clamp(k * (n + 1.2) - i);
+    const o = out(p);
+    const isHl = hl.some((h) => w.replace(/[،!.…]/g, "") === h);
+    return `<span class="w${isHl ? " hl" : ""}" style="opacity:${o};transform:translateY(${(1 - o) * 26}px);filter:blur(${(1 - o) * 6}px)">${w}</span>`;
+  }).join(" ");
+}
+
+function phone(id, x, y, s, rx, ry, rz, op = 1) {
+  const el = $(id);
+  el.style.left = (540 - 235 + x) + "px";
+  el.style.top = (y) + "px";
+  el.style.opacity = op;
+  el.style.transform = `scale(${s}) rotateX(${rx}deg) rotateY(${ry}deg) rotateZ(${rz}deg)`;
+}
+
+function render(t) {
+  // پس‌زمینه: حلقه‌ها می‌چرخند، نورها آرام جابه‌جا می‌شوند
+  $("r1").style.transform = `rotate(${t * 40}deg)`;
+  $("r2").style.transform = `rotate(${-t * 70}deg)`;
+  $("r3").style.transform = `rotate(${t * 30 + 120}deg)`;
+  $("g1").style.transform = `translate(${Math.sin(t * .5) * 40}px,${Math.cos(t * .4) * 30}px)`;
+  $("g2").style.transform = `translate(${Math.cos(t * .45) * 50}px,${Math.sin(t * .35) * 30}px)`;
+
+  // تصویرِ گوشیِ اصلی برای هر بخش
+  const want = t < 6.7 ? "coach-home.webp" : t < 10 ? "builder.webp" : "athlete-file.webp";
+  const imgs = document.querySelectorAll("#pA img.a");
+
+  // ۰–۳.۵: گوشی از پایین بالا می‌آید و می‌چرخد
+  const intro = out(seg(t, 0, 1.4));
+  let ax = 0, ay = lerp(1450, 150, intro), as = lerp(.8, .78, intro), arx = lerp(25, 8, intro), ary = lerp(-30, -14, intro), arz = lerp(-8, -4, intro);
+  let imgY = 0;
+  if (t >= 3.5) { // ۳.۵–۶.۷: کمی بزرگ‌تر، صفحه اسکرول می‌شود
+    const k = ease(seg(t, 3.5, 4.4));
+    as = lerp(.78, .86, k); ary = lerp(-14, 10, k); arx = lerp(8, 4, k); arz = lerp(-4, 3, k); ay = lerp(150, 110, k);
+    imgY = -ease(seg(t, 4.4, 6.4)) * 220;
+  }
+  if (t >= 6.7) { // ۶.۷–۱۰: برنامه‌ساز، چرخش به سمت دیگر
+    const k = ease(seg(t, 6.7, 7.5));
+    ary = lerp(10, -12, k); arz = lerp(3, -3, k); ax = lerp(0, 40, k);
+    imgY = lerp(-220, 0, k) - ease(seg(t, 7.6, 9.8)) * 380;
+  }
+  let bOp = 0, bx = 260, by = 260, bs = .72, brx = 20, bry = -24, brz = 22;
+  if (t >= 10) { // ۱۰–۱۳.۵: دو گوشیِ کج کنار هم (پرونده + گزارش)
+    const k = ease(seg(t, 10, 11));
+    ax = lerp(40, -150, k); ay = lerp(110, 120, k); as = lerp(.86, .7, k); arx = lerp(4, 22, k); ary = lerp(-12, 18, k); arz = lerp(-3, -22, k);
+    bOp = k; bx = lerp(420, 200, k); by = lerp(300, 200, k); bs = .7; brz = lerp(30, -22, k); bry = lerp(-30, 18, k);
+    imgY = -ease(seg(t, 11, 13.2)) * 300;
+  }
+  if (t >= 13.5) { // ۱۳.۵–۱۶.۷: زوم روی نمودار پیشرفت
+    const k = ease(seg(t, 13.5, 14.6));
+    ax = lerp(-150, -700, k); bx = lerp(200, 0, k); by = lerp(200, 120, k); bs = lerp(.7, .9, k); brx = lerp(20, 6, k); bry = lerp(18, -8, k); brz = lerp(-22, 0, k);
+  }
+  phone("pA", ax, ay, as, arx, ary, arz, t >= 13.5 ? 1 - ease(seg(t, 13.5, 14.2)) : 1);
+  phone("pB", bx, by, bs, brx, bry, brz, bOp);
+  imgs.forEach((im) => { im.style.opacity = im.dataset.src === want ? 1 : 0; im.style.transform = `translateY(${imgY}px)`; });
+  $("iB").style.transform = `translateY(${-ease(seg(t, 14.6, 16.4)) * 160}px)`;
+
+  // زیرنویس
+  const cap = $("cap");
+  const c = CAPS.find((x) => t >= x[0] - .05 && t <= x[1] + .35);
+  if (c) {
+    const [a, b, l1, l2, hl] = c;
+    const inK = out(seg(t, a, a + .45)), outK = ease(seg(t, b, b + .35));
+    cap.style.opacity = inK * (1 - outK);
+    cap.style.transform = `translateY(${(1 - inK) * 40 - outK * 20}px) scale(${lerp(.94, 1, inK)})`;
+    words($("c1"), l1, hl, seg(t, a + .1, a + .9));
+    words($("c2"), l2, hl, seg(t, a + .7, a + 1.6));
+  } else cap.style.opacity = 0;
+
+  // پایان
+  const e = ease(seg(t, 16.8, 17.6));
+  $("end").style.opacity = e;
+  $("end").style.transform = `scale(${lerp(.92, 1, e)})`;
+  $("pB").style.opacity = bOp * (1 - e);
+  $("brand").style.opacity = 1 - e;
+}
+render(0);
+</script>
+</body></html>
