@@ -1,0 +1,31 @@
+{
+  "name": "handballyar",
+  "private": true,
+  "version": "0.1.0",
+  "packageManager": "pnpm@10.28.0",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "pnpm -r build",
+    "dev:server": "pnpm --filter @handballyar/server dev",
+    "dev:web": "pnpm --filter @handballyar/web dev",
+    "test": "pnpm -r test",
+    "test:e2e": "pnpm --filter @handballyar/web e2e",
+    "typecheck": "pnpm -r typecheck",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "seed": "pnpm --filter @handballyar/server seed"
+  },
+  "devDependencies": {
+    "@eslint/js": "9.15.0",
+    "eslint": "9.15.0",
+    "eslint-plugin-react-hooks": "5.0.0",
+    "globals": "15.12.0",
+    "prettier": "3.3.3",
+    "typescript": "5.6.3",
+    "typescript-eslint": "8.15.0"
+  },
+  "type": "module"
+}
