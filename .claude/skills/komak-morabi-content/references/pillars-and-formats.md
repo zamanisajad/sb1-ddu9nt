@@ -56,6 +56,28 @@ Default length is 15 to 30 seconds. Keep it visually clear, with one idea.
 
 Product shots must come from a real screen recording. Mark them «ضبط از اپ واقعی». Reusable footage: `deliverables/coach-helper-promo.mp4`, `deliverables/exercise-demo-goblet-squat.mp4`.
 
+### Emotional brand story ("symbol film")
+Reference: a 2026-10 Instagram ad by a coach, about her hands, for a hand-wash brand. The owner liked it as "an ad that talks about something bigger than the ad".
+
+How it works:
+- **One physical symbol carries a life story.** In the reference it's the hands: lifting, helping, scars, fatigue. The product category naturally cares for that symbol.
+- **First-person, quiet voice-over.** Short sentences, sensory detail (lines, scars, tiredness), memory and gratitude. No claims, no features, no hard sell.
+- **The product appears late and briefly**, in the last 20–25%, as an act of care for the symbol rather than as a solution with numbers. The brand line comes at the very end. The caption repeats the core thought.
+- **Visuals:** slow close-ups, warm light, shallow depth of field, real textures, one person. On-screen text is minimal, but burn in subtitles for muted viewing.
+
+Symbols that fit «کمک مربی» honestly (the product must really touch the symbol):
+- the coach's old program notebook → program history and the athlete file
+- the coach's voice and cues → their own exercise videos in the library (Pro, reviewed by the team)
+- late-night hours spent writing programs → the builder, templates and auto-saved draft
+- remembering each athlete → the athlete file, and the "already used for this athlete" marker (⚠️ confirm it's live)
+
+Guardrails:
+- If an actor speaks as a coach, it's a dramatization. Never present it as a real user's testimonial.
+- A real coach's story needs their consent, and only their own words.
+- Pride, nostalgia and recognition are fine. Shame, fear and body-image pressure are not.
+- Don't imply features that don't exist, such as scanning paper notebooks into the app.
+- Use as the trust or awareness objective, with saves, shares and story comments as the metric. Not more than about 1 in 8 pieces.
+
 ### Carousel
 Deliver:
 - the brief header
