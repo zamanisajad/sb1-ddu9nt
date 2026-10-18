@@ -1,0 +1,8 @@
+{
+  "skill_name": "komak-morabi-content",
+  "evals": [
+    {"id": 1, "prompt": "برای مربی بدنسازی تازه‌کار یک ریلز درباره زمان‌بر بودن نوشتن برنامه تمرینی بساز.", "expected_output": "Reel for Segment A: one objective, scene table, on-screen text, caption, cover; no invented time savings/AI/prices; one CTA.", "files": []},
+    {"id": 2, "prompt": "یک پست تلگرامی آموزشی درباره ساخت کتابخانه حرکات بنویس که مستقیم تبلیغ کمک مربی نباشد.", "expected_output": "Conversational Telegram post teaching how to build an exercise library; no or minimal product mention; one CTA.", "files": []},
+    {"id": 3, "prompt": "یک ایده برای معرفی قابلیت واقعی کمک مربی طراحی کن که مخاطب را به اولین استفاده عملی از محصول برساند.", "expected_output": "Activation idea using a verified feature (e.g. builder/templates), real-recording shot list, one concrete first action, metric; flags Pro or unconfirmed features.", "files": []}
+  ]
+}
