@@ -1,12 +1,16 @@
-# Articles for masports.ir (automatic publishing)
+# Articles for masports.ir (owner publishes by hand)
 
-Every Markdown file in this folder (except this README) is published to **masports.ir** by
-`.github/workflows/publish-articles.yml` as soon as it's pushed. The site is «گروه ورزشی ما», which serves people interested in sports businesses.
+These articles are for **masports.ir**, the site «گروه ورزشی ما», which serves people interested in sports businesses.
 
-- **Schedule:** Saturday, Monday, Thursday and Friday, **18:00 Tehran time**.
-- **Who writes them:** a scheduled Claude task, about two hours before publish time.
+- **Schedule:** Saturday, Monday, Thursday and Friday, ready by **18:00 Tehran time**.
+- **Who writes them:** a scheduled task in the owner's Claude conversation.
 - **How they're written:** with the `komak-morabi-content` skill at `.claude/skills/komak-morabi-content/`.
-- **Review:** the owner chose direct publishing with no manual review step. That makes the skill's evidence rules the only safeguard. Follow them strictly.
+- **Publishing (since 2026-10-18): manual, by the owner.** For each article:
+  - the Markdown source (`articles/<date>-<slug>.md`) is committed
+  - an HTML copy is rendered with `scripts/render_article_html.py`; it shows the SEO fields at the top, then the body for copy-paste
+  - the HTML copy is sent to the owner in the conversation, with a short notice
+- **Automatic posting is off.** The host strips the login header. To re-enable it, see `.github/workflows/publish-articles.yml`.
+- **Review:** the owner reads each article before pasting it. The skill's evidence rules still apply in full.
 
 ## File format
 File name: `articles/YYYY-MM-DD-<slug>.md`. The date is the publish date in Tehran.
@@ -54,7 +58,7 @@ tags: [مربی بدنسازی, برنامه تمرینی]
   - claims of a guaranteed result («از ۱۰ به ۵۰ شاگرد»)
 - **Sources:** cite a source only if you actually opened it during this session, and give its real link. With no accessible source, write from practical coaching knowledge and cite nothing. Never fabricate.
 - **Overlap:** don't duplicate articles in this folder or the site's existing posts listed below. Choose a different angle or a narrower subtopic.
-- **Automated mode:** skip the skill's "propose an outline and get approval" step, because the owner pre-approved one-pass writing. Still run the quality rubric privately, and revise until no criterion scores below 3 and the average is 4 or higher.
+- **Scheduled mode:** skip the skill's "propose an outline and get approval" step, because the owner pre-approved one-pass writing. Still run the quality rubric privately, and revise until no criterion scores below 3 and the average is 4 or higher.
 
 ## Existing posts on masports.ir (as of 2026-10-18, don't duplicate)
 - افزایش تعداد شاگردان مربی بدنسازی؛ ۷ راهکار عملی (کسب و کار)

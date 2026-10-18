@@ -11,12 +11,11 @@
 #   WP_APP_PASSWORD  «رمز برنامه» همان کاربر (نه رمز ورود)
 name: Publish articles to masports.ir
 
+# Automatic publishing is OFF (owner's choice, 2026-10-18): the host strips the
+# Authorization header, and the owner prefers to paste articles into WordPress by hand.
+# To turn it back on: fix the header on the host, then restore the push trigger below.
 on:
-  push:
-    paths:
-      - "articles/**.md"
-      - ".github/workflows/publish-articles.yml"
-      - "scripts/publish_to_wordpress.py"
+  workflow_dispatch:
 
 concurrency:
   group: publish-articles
@@ -42,6 +41,7 @@ jobs:
           if [ -z "$BEFORE" ] || [ "$BEFORE" = "0000000000000000000000000000000000000000" ]; then
             BEFORE=$(git rev-parse HEAD~1)
           fi
+          # (only used if the push trigger is restored)
           git diff --name-only --diff-filter=AM "$BEFORE" HEAD -- 'articles/*.md' | grep -v '/README.md$' > files.txt || true
           echo "Articles in this push:"; cat files.txt
           echo "list=$(tr '\n' ' ' < files.txt)" >> "$GITHUB_OUTPUT"
