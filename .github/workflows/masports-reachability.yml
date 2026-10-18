@@ -1,7 +1,6 @@
-# Read-only connectivity check: can GitHub's runners reach masports.ir (WordPress REST API)?
+# Read-only diagnostics for masports.ir (no secrets, nothing is written to the site).
 name: masports reachability check
 on:
-  workflow_dispatch:
   push:
     paths:
       - ".github/workflows/masports-reachability.yml"
@@ -9,16 +8,11 @@ jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-      - name: Probe masports.ir
+      - name: Server type
+        run: curl -sS -m 30 -I https://masports.ir/ | grep -i -E "^(server|x-powered-by|x-litespeed|platform)" || true
+      - name: Login header test with a deliberately WRONG password
         run: |
-          for u in https://masports.ir/ https://www.masports.ir/ "https://masports.ir/wp-json/" "https://masports.ir/?rest_route=/" http://masports.ir/; do
-            echo "== $u"
-            curl -sS -m 30 -o body.txt -w "status=%{http_code} ip=%{remote_ip} time=%{time_total}s\n" "$u" || echo "FAILED"
-            head -c 300 body.txt 2>/dev/null | tr '\n' ' '; echo; echo
-          done
-          echo "== WordPress namespaces"
-          curl -sS -m 30 "https://masports.ir/wp-json/" | python3 -c "import sys,json; d=json.load(sys.stdin); print('name:',d.get('name')); print('namespaces:',d.get('namespaces')); print('auth:',list((d.get('authentication') or {}).keys()))" || echo "could not parse wp-json"
-          echo "== Categories"
-          curl -sS -m 30 "https://masports.ir/?rest_route=/wp/v2/categories&per_page=100" | python3 -c "import sys,json; [print(c['id'], c['count'], c['name'], c['slug']) for c in json.load(sys.stdin)]" || true
-          echo "== Recent posts"
-          curl -sS -m 30 "https://masports.ir/?rest_route=/wp/v2/posts&per_page=15&_fields=id,date,title,categories,link" | python3 -c "import sys,json; [print(p['date'], p['categories'], p['title']['rendered'], p['link']) for p in json.load(sys.stdin)]" || true
+          # Wrong credentials should give "incorrect_password"/"invalid_username" if WordPress sees the header,
+          # and "rest_not_logged_in" if the server strips it before WordPress.
+          curl -sS -m 30 -u "nobody-test:wrong pass word xxxx" "https://masports.ir/?rest_route=/wp/v2/users/me" | head -c 300; echo
+          curl -sS -m 30 -u "nobody-test:wrong pass word xxxx" "https://masports.ir/wp-json/wp/v2/users/me" | head -c 300; echo
