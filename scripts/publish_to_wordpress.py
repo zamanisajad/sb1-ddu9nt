@@ -5,7 +5,7 @@ Each article is a Markdown file with a front-matter block:
 
     ---
     title: عنوان مقاله
-    slug: english-url-slug
+    slug: نشانی-کوتاه-فارسی
     excerpt: توضیح متا (حدود ۱۵۵ نویسه)
     publish_at: 2026-10-20T18:00:00+03:30
     categories: [مربیگری]
@@ -17,7 +17,8 @@ Behavior:
 - If publish_at is in the future, the post is created with status "future".
   WordPress then publishes it itself at that time. Otherwise it is published now.
 - Idempotent: if a post with the same slug already exists, it is updated, not duplicated.
-- Category and tag names are looked up and created if missing.
+- Categories must already exist on the site (unknown ones are skipped with a warning).
+  Tags are created if missing.
 
 Environment variables: WP_URL (e.g. https://masports.ir), WP_USER, WP_APP_PASSWORD.
 Usage: publish_to_wordpress.py FILE [FILE ...]   (add --dry-run to only validate)
@@ -56,8 +57,8 @@ def parse_article(path):
     missing = [k for k in REQUIRED if not meta.get(k)]
     if missing:
         raise ValueError(f"{path}: missing front-matter fields: {', '.join(missing)}")
-    if not re.fullmatch(r"[a-z0-9]+(-[a-z0-9]+)*", meta["slug"]):
-        raise ValueError(f"{path}: slug must be lowercase English words joined by '-'")
+    if not re.fullmatch(r"[a-z0-9\u0600-\u06FF\u200c]+(-[a-z0-9\u0600-\u06FF\u200c]+)*", meta["slug"]):
+        raise ValueError(f"{path}: slug must be Persian or lowercase English words joined by '-' (no spaces)")
     when = dt.datetime.fromisoformat(meta["publish_at"])
     if when.tzinfo is None:
         raise ValueError(f"{path}: publish_at needs a timezone, e.g. +03:30")
@@ -93,13 +94,20 @@ class WP:
             detail = e.read().decode(errors="replace")[:500]
             raise RuntimeError(f"{method} {route} -> HTTP {e.code}: {detail}") from None
 
-    def term_ids(self, taxonomy, names):
+    def term_ids(self, taxonomy, names, create):
+        """Look up term ids by exact name. Tags are created if missing; categories never are."""
         ids = []
         for name in names or []:
             found = self.call("GET", f"/wp/v2/{taxonomy}", query={"search": name, "per_page": 100})
             match = next((t for t in found if t["name"] == name), None)
+            if not match and create:
+                try:
+                    match = self.call("POST", f"/wp/v2/{taxonomy}", {"name": name})
+                except RuntimeError as e:
+                    print(f"warning: could not create {taxonomy} «{name}»: {e}")
             if not match:
-                match = self.call("POST", f"/wp/v2/{taxonomy}", {"name": name})
+                print(f"warning: {taxonomy} «{name}» not found on the site; skipped")
+                continue
             ids.append(match["id"])
         return ids
 
@@ -133,8 +141,8 @@ def main(argv):
             "content": a["html"],
             "status": "future" if future else "publish",
             "date_gmt": a["when"].astimezone(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%S"),
-            "categories": wp.term_ids("categories", a.get("categories")),
-            "tags": wp.term_ids("tags", a.get("tags")),
+            "categories": wp.term_ids("categories", a.get("categories"), create=False),
+            "tags": wp.term_ids("tags", a.get("tags"), create=True),
         }
         existing = wp.find_post(a["slug"])
         if existing and existing.get("status") == "publish" and future:

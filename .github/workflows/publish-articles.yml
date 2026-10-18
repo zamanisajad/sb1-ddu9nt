@@ -1,0 +1,120 @@
+# انتشار خودکار مقاله‌ها در masports.ir
+#
+# هر وقت فایل تازه‌ای در پوشهٔ articles/ پوش شود:
+#   ۱. فایل بررسی می‌شود (عنوان، نشانی، زمان انتشار، طول متن).
+#   ۲. نوشته در وردپرس با وضعیت «زمان‌بندی‌شده» ساخته می‌شود؛ وردپرس خودش سر ساعت منتشرش می‌کند.
+#   ۳. این کار تا زمان انتشار صبر می‌کند و مطمئن می‌شود نوشته واقعاً منتشر شده
+#      (اگر وردپرس جا انداخت، خودش منتشرش می‌کند).
+#
+# رازهای لازم (Settings → Secrets and variables → Actions):
+#   WP_USER          نام کاربری وردپرس (ترجیحاً کاربری جدا با نقش «ویرایشگر»)
+#   WP_APP_PASSWORD  «رمز برنامه» همان کاربر (نه رمز ورود)
+name: Publish articles to masports.ir
+
+on:
+  push:
+    paths:
+      - "articles/**.md"
+      - ".github/workflows/publish-articles.yml"
+      - "scripts/publish_to_wordpress.py"
+
+concurrency:
+  group: publish-articles
+  cancel-in-progress: false
+
+env:
+  WP_URL: https://masports.ir
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Find new or changed articles
+        id: files
+        env:
+          BEFORE: ${{ github.event.before }}
+        run: |
+          if [ -z "$BEFORE" ] || [ "$BEFORE" = "0000000000000000000000000000000000000000" ]; then
+            BEFORE=$(git rev-parse HEAD~1)
+          fi
+          git diff --name-only --diff-filter=AM "$BEFORE" HEAD -- 'articles/*.md' | grep -v '/README.md$' > files.txt || true
+          echo "Articles in this push:"; cat files.txt
+          echo "list=$(tr '\n' ' ' < files.txt)" >> "$GITHUB_OUTPUT"
+
+      - name: Install dependency
+        run: pip install --quiet markdown
+
+      - name: Validate articles
+        if: steps.files.outputs.list != ''
+        run: python3 scripts/publish_to_wordpress.py --dry-run ${{ steps.files.outputs.list }}
+
+      - name: Check WordPress login
+        env:
+          WP_USER: ${{ secrets.WP_USER }}
+          WP_APP_PASSWORD: ${{ secrets.WP_APP_PASSWORD }}
+        run: |
+          if [ -z "$WP_USER" ] || [ -z "$WP_APP_PASSWORD" ]; then
+            if [ -z "${{ steps.files.outputs.list }}" ]; then
+              echo "::warning::رازهای WP_USER و WP_APP_PASSWORD هنوز تنظیم نشده‌اند (مقاله‌ای هم در این پوش نیست)."
+              exit 0
+            fi
+            echo "::error::رازهای WP_USER و WP_APP_PASSWORD هنوز تنظیم نشده‌اند."
+            exit 1
+          fi
+          code=$(curl -sS -m 60 -o me.json -w "%{http_code}" -u "$WP_USER:$WP_APP_PASSWORD" \
+            "$WP_URL/?rest_route=/wp/v2/users/me&context=edit")
+          if [ "$code" != "200" ]; then
+            echo "::error::ورود به وردپرس ناموفق بود (HTTP $code). نام کاربری یا رمز برنامه را بررسی کنید."
+            head -c 400 me.json; exit 1
+          fi
+          python3 -c "import json; d=json.load(open('me.json')); print('Logged in as:', d.get('name'), '| roles:', d.get('roles'))"
+
+      - name: Publish (or schedule) in WordPress
+        if: steps.files.outputs.list != ''
+        env:
+          WP_USER: ${{ secrets.WP_USER }}
+          WP_APP_PASSWORD: ${{ secrets.WP_APP_PASSWORD }}
+        run: python3 scripts/publish_to_wordpress.py ${{ steps.files.outputs.list }} | tee result.txt
+
+      - name: Wait for publish time and make sure it went live
+        if: steps.files.outputs.list != ''
+        env:
+          WP_USER: ${{ secrets.WP_USER }}
+          WP_APP_PASSWORD: ${{ secrets.WP_APP_PASSWORD }}
+          FILES: ${{ steps.files.outputs.list }}
+        run: |
+          python3 - <<'PY'
+          import base64, datetime as dt, json, os, re, time, urllib.parse, urllib.request
+          base = os.environ["WP_URL"]
+          auth = base64.b64encode(f"{os.environ['WP_USER']}:{os.environ['WP_APP_PASSWORD']}".encode()).decode()
+          H = {"Authorization": f"Basic {auth}", "Content-Type": "application/json", "User-Agent": "komak-morabi-publisher/1.0"}
+          def call(method, route, data=None, **q):
+              q["rest_route"] = route
+              url = base + "/?" + urllib.parse.urlencode(q)
+              req = urllib.request.Request(url, data=json.dumps(data).encode() if data else None, method=method, headers=H)
+              with urllib.request.urlopen(req, timeout=60) as r: return json.loads(r.read() or "null")
+          for f in os.environ["FILES"].split():
+              head = open(f, encoding="utf-8").read().split("---")[1]
+              slug = re.search(r"^slug:\s*(\S+)", head, re.M).group(1).strip("\"'")
+              when = dt.datetime.fromisoformat(re.search(r"^publish_at:\s*(\S+)", head, re.M).group(1).strip("\"'"))
+              wait = (when - dt.datetime.now(dt.timezone.utc)).total_seconds() + 60
+              if wait > 5.5 * 3600:
+                  print(f"{slug}: publish time is more than 5.5h away; leaving it to WordPress scheduling."); continue
+              if wait > 0:
+                  print(f"{slug}: waiting {int(wait/60)} min until {when.isoformat()} …", flush=True); time.sleep(wait)
+              try: urllib.request.urlopen(base + "/wp-cron.php?doing_wp_cron", timeout=60).read()
+              except Exception as e: print("wp-cron ping:", e)
+              time.sleep(20)
+              found = call("GET", "/wp/v2/posts", slug=slug, status="publish,future,draft,pending", context="edit")
+              if not found: print(f"{slug}: not found in WordPress!"); raise SystemExit(1)
+              post = found[0]
+              if post["status"] != "publish":
+                  post = call("POST", f"/wp/v2/posts/{post['id']}", {"status": "publish"})
+                  print(f"{slug}: WordPress missed the schedule; published it now.")
+              print(f"{slug}: LIVE → {post['link']}")
+          PY
