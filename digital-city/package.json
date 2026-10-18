@@ -1,0 +1,28 @@
+{
+  "name": "digital-city",
+  "version": "1.0.0",
+  "description": "شهر دیجیتال — بازی چندنفره‌ی آنلاین سه‌بعدی با اکانت، بانک، PvP و مغازه‌ی بازیکن‌ها",
+  "private": true,
+  "type": "module",
+  "main": "server/index.js",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node --watch server/index.js",
+    "test": "node --test test/*.test.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "better-sqlite3": "^13.0.3",
+    "cookie": "^2.0.1",
+    "express": "^5.3.0",
+    "jsonwebtoken": "^9.0.3",
+    "socket.io": "^4.8.4",
+    "three": "^0.160.0"
+  },
+  "devDependencies": {
+    "socket.io-client": "^4.8.4"
+  }
+}

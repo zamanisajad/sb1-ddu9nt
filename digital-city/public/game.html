@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <title>شهر دیجیتال</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <script type="module" src="/js/game.js"></script>
+</head>
+<body class="game-page">
+  <div id="scene"></div>
+
+  <header class="hud-top">
+    <div class="stats">
+      <div class="chip score" title="امتیاز روی هوا — اگر شکست بخوری مال برنده می‌شه">
+        <span class="chip-label">⚡ روی هوا</span><b id="score">0</b>
+      </div>
+      <div class="chip bank" title="فیت‌کوین بانک‌شده — امن">
+        <span class="chip-label">🏦 بانک</span><b id="bank">0</b>
+      </div>
+      <div class="health" title="سلامتی"><div id="health-fill"></div></div>
+    </div>
+    <nav class="menu">
+      <span class="online" id="online" title="بازیکن‌های آنلاین">👥 ۱</span>
+      <button type="button" class="icon-btn" data-open="myshop" title="مغازه‌ی من">🏪</button>
+      <button type="button" class="icon-btn" data-open="outfits" title="لباس‌ها">👕</button>
+      <button type="button" class="icon-btn" data-open="ranks" title="رتبه‌ها">🏆</button>
+      <button type="button" class="icon-btn" id="logout" title="خروج">⎋</button>
+    </nav>
+  </header>
+
+  <section class="mission" id="mission">
+    <div class="mission-text" id="mission-text">در حال اتصال…</div>
+    <div class="mission-bar"><div id="mission-fill"></div></div>
+    <button type="button" class="link-btn" id="mission-skip">عوض کن</button>
+  </section>
+
+  <div class="compass" id="compass">
+    <div class="pointer" id="bank-pointer"><span class="arrow">➤</span><span id="bank-dist"></span></div>
+    <div class="pointer mission-pointer" id="mission-pointer" hidden><span class="arrow">➤</span><span id="mission-dist"></span></div>
+  </div>
+
+  <div class="feed" id="feed" aria-live="polite"></div>
+  <div class="prompt" id="prompt" hidden></div>
+  <div class="me-name" id="me-name"></div>
+
+  <div class="controls" dir="ltr">
+    <div class="joystick" id="joystick"><div class="knob" id="knob"></div></div>
+    <div class="actions">
+      <button type="button" class="act kick" data-act="kick">لگد<small>K</small></button>
+      <button type="button" class="act punch" data-act="punch">مشت<small>J</small></button>
+      <button type="button" class="act jump" data-act="jump">پرش<small>Space</small></button>
+    </div>
+  </div>
+
+  <div class="overlay" id="death" hidden>
+    <div class="overlay-card">
+      <h2>شکست خوردی!</h2>
+      <p id="death-text"></p>
+      <p class="muted">چند لحظه‌ی دیگه کنار نزدیک‌ترین گلوبانک برمی‌گردی…</p>
+    </div>
+  </div>
+
+  <div class="overlay" id="loading">
+    <div class="overlay-card"><h2>در حال ورود به شهر…</h2></div>
+  </div>
+
+  <div class="modal" id="modal" hidden role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <button type="button" class="modal-close" id="modal-close" aria-label="بستن">✕</button>
+      <div id="modal-body"></div>
+    </div>
+  </div>
+</body>
+</html>
