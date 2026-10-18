@@ -18,3 +18,7 @@ jobs:
           done
           echo "== WordPress namespaces"
           curl -sS -m 30 "https://masports.ir/wp-json/" | python3 -c "import sys,json; d=json.load(sys.stdin); print('name:',d.get('name')); print('namespaces:',d.get('namespaces')); print('auth:',list((d.get('authentication') or {}).keys()))" || echo "could not parse wp-json"
+          echo "== Categories"
+          curl -sS -m 30 "https://masports.ir/?rest_route=/wp/v2/categories&per_page=100" | python3 -c "import sys,json; [print(c['id'], c['count'], c['name'], c['slug']) for c in json.load(sys.stdin)]" || true
+          echo "== Recent posts"
+          curl -sS -m 30 "https://masports.ir/?rest_route=/wp/v2/posts&per_page=15&_fields=id,date,title,categories,link" | python3 -c "import sys,json; [print(p['date'], p['categories'], p['title']['rendered'], p['link']) for p in json.load(sys.stdin)]" || true
