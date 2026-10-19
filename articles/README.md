@@ -73,7 +73,7 @@ tags: [مربی بدنسازی, برنامه تمرینی]
 ## Topic backlog
 Take the first unused topic. Once a topic is used, mark it `[x]` in the same commit as its article. When the list runs out, add 8 new topics with the same mix, then continue.
 
-- [ ] چطور برنامهٔ تمرینی شاگرد جدید را سریع‌تر بنویسیم، بدون افت کیفیت (کسب و کار · workflow)
+- [x] چطور برنامهٔ تمرینی شاگرد جدید را سریع‌تر بنویسیم، بدون افت کیفیت (کسب و کار · workflow)
 - [ ] کتابخانهٔ حرکات شخصی مربی: از کجا شروع کنیم و چطور مرتبش کنیم (مهارت کاربردی · education)
 - [ ] توضیح اجرای حرکت به شاگرد مبتدی: نشانه‌های کلامی کوتاه و اشتباه‌های رایج مربی‌ها (زندگی سالم · knowledge)
 - [ ] الگوی برنامه (تمپلیت) بسازیم یا هر بار از صفر بنویسیم؟ مرز بین الگو و شخصی‌سازی (کسب و کار · workflow, light product mention allowed)
