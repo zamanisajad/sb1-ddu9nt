@@ -23,6 +23,8 @@ excerpt: توضیح متا، ۱۲۰ تا ۱۵۵ نویسه، یک جملهٔ ر�
 publish_at: 2026-10-20T18:00:00+03:30
 categories: [کسب و کار]
 tags: [مربی بدنسازی, برنامه تمرینی]
+focus_keyword: کلمهٔ کلیدی اصلی (برای Rank Math)
+keywords: [۶ تا ۱۰ عبارت جست‌وجوی مرتبط و طولانی]
 ---
 متن مقاله با Markdown (## و ### برای تیترها، فهرست، **پررنگ**)
 ```
@@ -39,6 +41,11 @@ tags: [مربی بدنسازی, برنامه تمرینی]
 
 - **Tags:** 2–5 per article. Missing tags are created automatically.
 - `publish_at` always ends in `+03:30`.
+- **SEO keywords** (the owner asked for them on every article):
+  - `focus_keyword`: one main search phrase, written the way people type it into Google (no ezafe «ٔ»).
+  - `keywords`: 6–10 related phrases, including long questions such as «چطور … بنویسیم».
+  - Use the focus keyword exactly in the title, in the first paragraph, in at least one H2, and in the summary. Keep it natural: about 4–6 uses in total.
+  - Don't claim search volumes; these are judgment-based suggestions.
 - **Images:** none are uploaded automatically. Don't reference images that don't exist.
 
 ## Editorial rules (on top of the skill)
