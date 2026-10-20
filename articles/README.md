@@ -25,6 +25,7 @@ categories: [کسب و کار]
 tags: [مربی بدنسازی, برنامه تمرینی]
 focus_keyword: کلمهٔ کلیدی اصلی (برای Rank Math)
 keywords: [۶ تا ۱۰ عبارت جست‌وجوی مرتبط و طولانی]
+image_alt: متن جایگزین تصویر شاخص، شامل کلمهٔ کلیدی اصلی
 ---
 متن مقاله با Markdown (## و ### برای تیترها، فهرست، **پررنگ**)
 ```
@@ -41,12 +42,17 @@ keywords: [۶ تا ۱۰ عبارت جست‌وجوی مرتبط و طولانی]
 
 - **Tags:** 2–5 per article. Missing tags are created automatically.
 - `publish_at` always ends in `+03:30`.
-- **SEO keywords** (the owner asked for them on every article):
-  - `focus_keyword`: one main search phrase, written the way people type it into Google (no ezafe «ٔ»).
-  - `keywords`: 6–10 related phrases, including long questions such as «چطور … بنویسیم».
-  - Use the focus keyword exactly in the title, in the first paragraph, in at least one H2, and in the summary. Keep it natural: about 4–6 uses in total.
-  - Don't claim search volumes; these are judgment-based suggestions.
-- **Images:** none are uploaded automatically. Don't reference images that don't exist.
+- **SEO keywords and Rank Math.** The owner checks every article in Rank Math. `python3 scripts/seo_check.py <file>` must print no FAIL before delivery. Its checks:
+  - `focus_keyword`: one main search phrase, written the way people type it into Google (no ezafe «ٔ» and no «ۀ», because Rank Math matches it literally).
+  - `keywords`: 6–10 related phrases, including long questions such as «چطور … بنویسیم». Use several of them naturally in the text, because Rank Math counts them too.
+  - The **title** starts with the focus keyword, contains a number (for example «در ۷ قدم»), and is at most 60 characters.
+  - The **meta description** (`excerpt`) contains the focus keyword and is 120–160 characters.
+  - The **slug** contains every word of the focus keyword.
+  - The focus keyword appears in the **first sentence**, in at least one **H2**, and in the summary. Its density is 0.75–2.5%, and focus plus related keywords together reach at least 1%. Keep it natural: rephrase sentences rather than stuffing.
+  - At least one **internal link** to a masports.ir post: an earlier article in this series, or one of the existing posts listed below, whichever is most relevant.
+  - At least one **external link** to a credible source you actually opened in this session, such as a standards body, federation, university, peer-reviewed journal, WHO, ACSM or NSCA. Never link a page you didn't open.
+  - `image_alt` contains the focus keyword. Make the cover with `node scripts/make_cover.js <file>`, which produces a title card only and never a fake app screen.
+  - No paragraph is longer than about 120 words.
 
 ## Editorial rules (on top of the skill)
 - **Audience:** Iranian sports and fitness coaches. Write in formal Persian, using «شما» or a neutral voice. The article should be useful without the app.
@@ -67,15 +73,16 @@ keywords: [۶ تا ۱۰ عبارت جست‌وجوی مرتبط و طولانی]
 - **Overlap:** don't duplicate articles in this folder or the site's existing posts listed below. Choose a different angle or a narrower subtopic.
 - **Scheduled mode:** skip the skill's "propose an outline and get approval" step, because the owner pre-approved one-pass writing. Still run the quality rubric privately, and revise until no criterion scores below 3 and the average is 4 or higher.
 
-## Existing posts on masports.ir (as of 2026-10-18, don't duplicate)
-- افزایش تعداد شاگردان مربی بدنسازی؛ ۷ راهکار عملی (کسب و کار)
-- مدیر باشگاه موفق؛ چرا فقط مربی خوب بودن دیگر کافی نیست؟ (کسب و کار)
-- راهنمای ساخت رزومه مربی ورزشی (کسب و کار)
-- ترندهای فیتنس ۲۰۲۶ برای مربیان ورزشی ایران (کسب و کار)
-- ۶ مرحلهٔ عملی برای ساخت عادت ورزشی پایدار (زندگی سالم)
-- ۲۵ راهکار علمی برای تغییر رفتار ورزشی مخصوص مربیان (زندگی سالم)
-- ۷ محرک اصلی زندگی سالم (زندگی سالم)
-- Older posts: Instagram, SEO, design and marketing.
+## Existing posts on masports.ir (as of 2026-10-18; don't duplicate them, and use them for internal links)
+- [افزایش تعداد شاگردان مربی بدنسازی؛ ۷ راهکار عملی](https://masports.ir/%d8%a7%d9%81%d8%b2%d8%a7%db%8c%d8%b4-%d8%aa%d8%b9%d8%af%d8%a7%d8%af-%d8%b4%d8%a7%da%af%d8%b1%d8%af%d8%a7%d9%86-%d9%85%d8%b1%d8%a8%db%8c-%d8%a8%d8%af%d9%86%d8%b3%d8%a7%d8%b2%db%8c%d8%9b-%db%b7-%d8%b1/) (کسب و کار)
+- [مدیر باشگاه موفق؛ چرا فقط مربی خوب بودن دیگر کافی نیست؟](https://masports.ir/%d9%85%d8%af%db%8c%d8%b1-%d8%a8%d8%a7%d8%b4%da%af%d8%a7%d9%87-%d9%85%d9%88%d9%81%d9%82%d8%9b-%da%86%d8%b1%d8%a7-%d9%81%d9%82%d8%b7-%d9%85%d8%b1%d8%a8%db%8c-%d8%ae%d9%88%d8%a8-%d8%a8%d9%88%d8%af%d9%86/) (کسب و کار)
+- [راهنمای ساخت رزومه مربی ورزشی](https://masports.ir/%d8%b1%d8%a7%d9%87%d9%86%d9%85%d8%a7%db%8c-%d8%b3%d8%a7%d8%ae%d8%aa-%d8%b1%d8%b2%d9%88%d9%85%d9%87-%d9%85%d8%b1%d8%a8%db%8c-%d9%88%d8%b1%d8%b2%d8%b4%db%8c/) (کسب و کار)
+- [ترندهای فیتنس ۲۰۲۶ برای مربیان ورزشی ایران](https://masports.ir/%d8%aa%d8%b1%d9%86%d8%af%d9%87%d8%a7%db%8c-%d9%81%db%8c%d8%aa%d9%86%d8%b3-%db%b2%db%b0%db%b2%db%b6/) (کسب و کار)
+- [۶ مرحلهٔ عملی برای ساخت عادت ورزشی پایدار](https://masports.ir/%d8%b3%d8%a7%d8%ae%d8%aa-%d8%b9%d8%a7%d8%af%d8%aa-%d9%88%d8%b1%d8%b2%d8%b4%db%8c-%d9%be%d8%a7%db%8c%d8%af%d8%a7%d8%b1/) (زندگی سالم)
+- [۲۵ راهکار علمی برای تغییر رفتار ورزشی مخصوص مربیان](https://masports.ir/%db%b2%db%b5-%d8%b1%d8%a7%d9%87%da%a9%d8%a7%d8%b1-%d8%b9%d9%84%d9%85%db%8c-%d8%aa%d8%ba%db%8c%db%8c%d8%b1-%d8%b1%d9%81%d8%aa%d8%a7%d8%b1-%d9%88%d8%b1%d8%b2%d8%b4%db%8c/) (زندگی سالم)
+- [۷ محرک اصلی زندگی سالم](https://masports.ir/7-%d9%85%d8%ad%d8%b1%da%a9-%d8%a7%d8%b5%d9%84%db%8c-%d8%b2%d9%86%d8%af%da%af%db%8c-%d8%b3%d8%a7%d9%84%d9%85/) (زندگی سالم)
+- Articles in this series are linked at `https://masports.ir/<slug>/`, which assumes the owner kept the suggested slug.
+- Older posts cover Instagram, SEO, design and marketing.
 
 ## Topic backlog
 Take the first unused topic. Once a topic is used, mark it `[x]` in the same commit as its article. When the list runs out, add 8 new topics with the same mix, then continue.

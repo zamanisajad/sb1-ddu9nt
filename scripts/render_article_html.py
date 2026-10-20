@@ -29,6 +29,7 @@ h1{{font-size:28px;line-height:1.6}} h2{{margin-top:32px}} li{{margin:4px 0}}
 <div><b>توضیح متا:</b> {e(a['excerpt'])}</div>
 <div><b>کلمهٔ کلیدی اصلی:</b> {e(a.get('focus_keyword'))}</div>
 <div><b>کلمات کلیدی مرتبط:</b> {e(a.get('keywords'))}</div>
+<div><b>تصویر شاخص:</b> فایل {e(os.path.basename(src).replace('.md', '.cover.png'))} — متن جایگزین (alt): {e(a.get('image_alt'))}</div>
 <div><b>دسته‌بندی:</b> {e(a.get('categories'))}</div>
 <div><b>برچسب‌ها:</b> {e(a.get('tags'))}</div>
 <div><b>زمان پیشنهادی:</b> {e(a['when'].strftime('%Y-%m-%d %H:%M'))} (تهران)</div>
