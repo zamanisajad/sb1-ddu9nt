@@ -29,13 +29,30 @@ jobs:
               except urllib.error.HTTPError as e:
                   return e.code, e.read().decode(errors="replace")[:400]
           code, me = call("GET", "/wp/v2/users/me", context="edit")
-          print("login:", code, me if code != 200 else (me.get("name"), me.get("roles")))
-          if code != 200:
-              print("::error::WordPress login failed; nothing was published."); sys.exit(1)
-          code, post = call("POST", "/wp/v2/posts", {
-              "title": "سلام، مقاله منتشر شد",
-              "content": "<p>سلام، مقاله منتشر شد.</p><p>این یک نوشتهٔ آزمایشی برای بررسی انتشار خودکار است.</p>",
-              "status": "publish"})
-          print("publish:", code, post.get("link") if isinstance(post, dict) else post)
-          sys.exit(0 if code in (200, 201) else 1)
+          print("REST login:", code)
+          if code == 200:
+              code, post = call("POST", "/wp/v2/posts", {"title": "سلام، مقاله منتشر شد",
+                  "content": "<p>سلام، مقاله منتشر شد.</p><p>این یک نوشتهٔ آزمایشی برای بررسی انتشار خودکار است.</p>",
+                  "status": "publish"})
+              print("REST publish:", code, post.get("link") if isinstance(post, dict) else post)
+              sys.exit(0 if code in (200, 201) else 1)
+          # Fallback: XML-RPC carries the credentials in the request body, so a stripped
+          # Authorization header doesn't matter. Application passwords work here too.
+          import xmlrpc.client
+          class UA(xmlrpc.client.SafeTransport):
+              user_agent = "komak-morabi-publisher/1.0"
+          rpc = xmlrpc.client.ServerProxy(base + "/xmlrpc.php", transport=UA())
+          user, pw = os.environ["WP_USER"], os.environ["WP_APP_PASSWORD"]
+          try:
+              blogs = rpc.wp.getUsersBlogs(user, pw)
+              print("XML-RPC login OK:", [b.get("blogName") for b in blogs])
+              pid = rpc.wp.newPost(0, user, pw, {"post_type": "post", "post_status": "publish",
+                  "post_title": "سلام، مقاله منتشر شد",
+                  "post_content": "<p>سلام، مقاله منتشر شد.</p><p>این یک نوشتهٔ آزمایشی برای بررسی انتشار خودکار است.</p>"})
+              link = rpc.wp.getPost(0, user, pw, int(pid), ["link", "post_status"])
+              print("XML-RPC publish OK: id", pid, link)
+          except xmlrpc.client.Fault as f:
+              print("::error::XML-RPC fault", f.faultCode, f.faultString); sys.exit(1)
+          except Exception as e:
+              print("::error::XML-RPC failed:", repr(e)[:300]); sys.exit(1)
           PY
