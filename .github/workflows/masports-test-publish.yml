@@ -1,0 +1,41 @@
+# One-off test requested by the owner: publish a short "hello" post on masports.ir.
+# Runs only when this file itself is pushed.
+name: masports test publish
+on:
+  push:
+    paths:
+      - ".github/workflows/masports-test-publish.yml"
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Login check and test post
+        env:
+          WP_URL: https://masports.ir
+          WP_USER: ${{ secrets.WP_USER }}
+          WP_APP_PASSWORD: ${{ secrets.WP_APP_PASSWORD }}
+        run: |
+          python3 - <<'PY'
+          import base64, json, os, sys, urllib.request, urllib.error, urllib.parse
+          base = os.environ["WP_URL"]
+          tok = base64.b64encode(f"{os.environ['WP_USER']}:{os.environ['WP_APP_PASSWORD']}".encode()).decode()
+          H = {"Authorization": f"Basic {tok}", "Content-Type": "application/json; charset=utf-8", "User-Agent": "komak-morabi-publisher/1.0"}
+          def call(method, route, data=None, **q):
+              q["rest_route"] = route
+              req = urllib.request.Request(base + "/?" + urllib.parse.urlencode(q), method=method, headers=H,
+                                           data=json.dumps(data).encode() if data else None)
+              try:
+                  with urllib.request.urlopen(req, timeout=60) as r: return r.status, json.loads(r.read() or "null")
+              except urllib.error.HTTPError as e:
+                  return e.code, e.read().decode(errors="replace")[:400]
+          code, me = call("GET", "/wp/v2/users/me", context="edit")
+          print("login:", code, me if code != 200 else (me.get("name"), me.get("roles")))
+          if code != 200:
+              print("::error::WordPress login failed; nothing was published."); sys.exit(1)
+          code, post = call("POST", "/wp/v2/posts", {
+              "title": "سلام، مقاله منتشر شد",
+              "content": "<p>سلام، مقاله منتشر شد.</p><p>این یک نوشتهٔ آزمایشی برای بررسی انتشار خودکار است.</p>",
+              "status": "publish"})
+          print("publish:", code, post.get("link") if isinstance(post, dict) else post)
+          sys.exit(0 if code in (200, 201) else 1)
+          PY
