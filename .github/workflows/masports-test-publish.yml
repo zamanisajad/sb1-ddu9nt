@@ -31,7 +31,7 @@ jobs:
           code, me = call("GET", "/wp/v2/users/me", context="edit")
           print("REST login:", code)
           if code == 200:
-              code, post = call("POST", "/wp/v2/posts", {"title": "سلام، مقاله منتشر شد",
+              code, post = call("POST", "/wp/v2/posts", {"title": "سلام",
                   "content": "<p>سلام، مقاله منتشر شد.</p><p>این یک نوشتهٔ آزمایشی برای بررسی انتشار خودکار است.</p>",
                   "status": "publish"})
               print("REST publish:", code, post.get("link") if isinstance(post, dict) else post)
@@ -47,7 +47,7 @@ jobs:
               blogs = rpc.wp.getUsersBlogs(user, pw)
               print("XML-RPC login OK:", [b.get("blogName") for b in blogs])
               pid = rpc.wp.newPost(0, user, pw, {"post_type": "post", "post_status": "publish",
-                  "post_title": "سلام، مقاله منتشر شد",
+                  "post_title": "سلام",
                   "post_content": "<p>سلام، مقاله منتشر شد.</p><p>این یک نوشتهٔ آزمایشی برای بررسی انتشار خودکار است.</p>"})
               link = rpc.wp.getPost(0, user, pw, int(pid), ["link", "post_status"])
               print("XML-RPC publish OK: id", pid, link)
