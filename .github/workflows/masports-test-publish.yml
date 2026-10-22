@@ -1,4 +1,4 @@
-# One-off test requested by the owner: publish a short "hello" post on masports.ir (re-run after mu-plugin rename to .php).
+# One-off test requested by the owner: publish a short "hello" post on masports.ir (re-run 4).
 # Runs only when this file itself is pushed.
 name: masports test publish
 on:
