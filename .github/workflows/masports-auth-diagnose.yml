@@ -1,4 +1,4 @@
-# Read-only diagnostics for WordPress REST login on masports.ir (publishes nothing). Run 4.
+# Read-only diagnostics for WordPress REST login on masports.ir (publishes nothing). Run 5.
 name: masports auth diagnose
 on:
   push:
