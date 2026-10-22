@@ -70,7 +70,7 @@ add_filter( 'rest_post_dispatch', function ( $response ) use ( $mas_auth_seen ) 
 				}
 			}
 		}
-		$response->header( 'X-MAS-Hook-' . $hook, substr( implode( ', ', $names ), 0, 400 ) ?: 'none' );
+		$response->header( 'X-MAS-Hook-' . str_replace( '_', '-', $hook ), substr( implode( ', ', $names ), 0, 400 ) ?: 'none' );
 	}
 	return $response;
 } );
