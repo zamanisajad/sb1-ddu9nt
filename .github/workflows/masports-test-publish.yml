@@ -29,7 +29,12 @@ jobs:
               except urllib.error.HTTPError as e:
                   return e.code, e.read().decode(errors="replace")[:400]
           code, me = call("GET", "/wp/v2/users/me", context="edit")
-          print("REST login:", code)
+          print("REST login with real secrets:", code, me if code != 200 else "OK")
+          print("WP_USER length:", len(os.environ["WP_USER"]), "| WP_APP_PASSWORD length:", len(os.environ["WP_APP_PASSWORD"]))
+          bad = base64.b64encode(b"nobody-test:wrong pass word").decode()
+          r = urllib.request.Request(base + "/?rest_route=/wp/v2/users/me", headers={**H, "Authorization": f"Basic {bad}"})
+          try: urllib.request.urlopen(r, timeout=60)
+          except urllib.error.HTTPError as e: print("REST login with WRONG password (comparison):", e.code, e.read().decode(errors="replace")[:200])
           if code == 200:
               code, post = call("POST", "/wp/v2/posts", {"title": "سلام",
                   "content": "<p>سلام، مقاله منتشر شد.</p><p>این یک نوشتهٔ آزمایشی برای بررسی انتشار خودکار است.</p>",
