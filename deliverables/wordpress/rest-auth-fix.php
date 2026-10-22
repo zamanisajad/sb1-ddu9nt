@@ -2,7 +2,7 @@
 /**
  * Plugin Name: REST Auth Header Fix (masports)
  * Description: اجازه می‌دهد «رمز عبور برنامه» وردپرس روی این هاست کار کند: هدر حذف‌شدهٔ Authorization را از هدر جایگزین X-Authorization می‌خواند و درخواست‌های REST را برای رمز برنامه معتبر می‌شناسد، حتی اگر افزونه‌ای کاربر را زودتر تشخیص داده باشد. رمزها همچنان توسط خود وردپرس بررسی می‌شوند.
- * Version: 1.2
+ * Version: 1.3
  */
 
 // ۱) هدر جایگزین را به جای هدر حذف‌شده بنشان.
@@ -41,7 +41,7 @@ add_filter( 'rest_post_dispatch', function ( $response ) use ( $mas_auth_seen ) 
 	if ( ! ( $response instanceof WP_HTTP_Response ) ) {
 		return $response;
 	}
-	$response->header( 'X-MAS-Auth-Fix', '1.2' );
+	$response->header( 'X-MAS-Auth-Fix', '1.3' );
 	$response->header( 'X-MAS-Auth-Seen', $mas_auth_seen );
 	$response->header( 'X-MAS-AppPw-Available', function_exists( 'wp_is_application_passwords_available' ) && wp_is_application_passwords_available() ? 'yes' : 'no' );
 	$response->header( 'X-MAS-AppPw-InUse', class_exists( 'WP_Application_Passwords' ) && WP_Application_Passwords::is_in_use() ? 'yes' : 'no' );
@@ -74,3 +74,7 @@ add_filter( 'rest_post_dispatch', function ( $response ) use ( $mas_auth_seen ) 
 	}
 	return $response;
 } );
+
+// ۴) اگر نشانهٔ «رمز برنامه در حال استفاده است» در تنظیمات سایت گم شده باشد، وردپرس اصلاً رمز را بررسی نمی‌کند.
+//    این خط فقط آن نشانه را روشن می‌کند؛ خود رمز همچنان کامل بررسی می‌شود.
+add_filter( 'pre_site_option_using_application_passwords', '__return_true' );
