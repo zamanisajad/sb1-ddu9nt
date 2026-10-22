@@ -20,7 +20,7 @@ jobs:
             echo "=== $1"
             curl -sS -m 60 -X "$2" -D h.txt -o b.txt -H "Authorization: $4" -H "X-Authorization: $4" \
               -H "Content-Type: application/json" ${5:+--data "$5"} "$3" || true
-            grep -i -E "^(HTTP/|server|x-litespeed|x-cache|cf-cache|cache-control|age:|x-powered|x-wp|x-redirect|set-cookie: wordpress_logged)" h.txt | tr -d '\r'
+            grep -i -E "^(HTTP/|server|x-litespeed|x-cache|cf-cache|cache-control|age:|x-powered|x-wp|x-redirect|x-mas|set-cookie: wordpress_logged)" h.txt | tr -d '\r'
             head -c 250 b.txt; echo; echo
           }
           probe "GET users/me GOOD (cache-busted)" GET "https://masports.ir/?rest_route=/wp/v2/users/me&_=$T" "$GOOD"
