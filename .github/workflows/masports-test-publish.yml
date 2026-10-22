@@ -19,7 +19,7 @@ jobs:
           import base64, json, os, sys, urllib.request, urllib.error, urllib.parse
           base = os.environ["WP_URL"]
           tok = base64.b64encode(f"{os.environ['WP_USER']}:{os.environ['WP_APP_PASSWORD']}".encode()).decode()
-          H = {"Authorization": f"Basic {tok}", "Content-Type": "application/json; charset=utf-8", "User-Agent": "komak-morabi-publisher/1.0"}
+          H = {"Authorization": f"Basic {tok}", "X-Authorization": f"Basic {tok}", "Content-Type": "application/json; charset=utf-8", "User-Agent": "komak-morabi-publisher/1.0"}
           def call(method, route, data=None, **q):
               q["rest_route"] = route
               req = urllib.request.Request(base + "/?" + urllib.parse.urlencode(q), method=method, headers=H,
@@ -32,7 +32,7 @@ jobs:
           print("REST login with real secrets:", code, me if code != 200 else "OK")
           print("WP_USER length:", len(os.environ["WP_USER"]), "| WP_APP_PASSWORD length:", len(os.environ["WP_APP_PASSWORD"]))
           bad = base64.b64encode(b"nobody-test:wrong pass word").decode()
-          r = urllib.request.Request(base + "/?rest_route=/wp/v2/users/me", headers={**H, "Authorization": f"Basic {bad}"})
+          r = urllib.request.Request(base + "/?rest_route=/wp/v2/users/me", headers={**H, "Authorization": f"Basic {bad}", "X-Authorization": f"Basic {bad}"})
           try: urllib.request.urlopen(r, timeout=60)
           except urllib.error.HTTPError as e: print("REST login with WRONG password (comparison):", e.code, e.read().decode(errors="replace")[:200])
           if code == 200:

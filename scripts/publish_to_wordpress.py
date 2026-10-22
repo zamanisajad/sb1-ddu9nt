@@ -75,7 +75,7 @@ class WP:
         self.base = base.rstrip("/")
         token = base64.b64encode(f"{user}:{password}".encode()).decode()
         self.headers = {
-            "Authorization": f"Basic {token}",
+            "Authorization": f"Basic {token}", "X-Authorization": f"Basic {token}",
             "Content-Type": "application/json; charset=utf-8",
             "User-Agent": "komak-morabi-publisher/1.0",
         }

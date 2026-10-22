@@ -66,7 +66,8 @@ jobs:
             echo "::error::رازهای WP_USER و WP_APP_PASSWORD هنوز تنظیم نشده‌اند."
             exit 1
           fi
-          code=$(curl -sS -m 60 -o me.json -w "%{http_code}" -u "$WP_USER:$WP_APP_PASSWORD" \
+          AUTH="Basic $(printf '%s' "$WP_USER:$WP_APP_PASSWORD" | base64 -w0)"
+          code=$(curl -sS -m 60 -o me.json -w "%{http_code}" -H "Authorization: $AUTH" -H "X-Authorization: $AUTH" \
             "$WP_URL/?rest_route=/wp/v2/users/me&context=edit")
           if [ "$code" != "200" ]; then
             echo "::error::ورود به وردپرس ناموفق بود (HTTP $code). نام کاربری یا رمز برنامه را بررسی کنید."
@@ -92,7 +93,7 @@ jobs:
           import base64, datetime as dt, json, os, re, time, urllib.parse, urllib.request
           base = os.environ["WP_URL"]
           auth = base64.b64encode(f"{os.environ['WP_USER']}:{os.environ['WP_APP_PASSWORD']}".encode()).decode()
-          H = {"Authorization": f"Basic {auth}", "Content-Type": "application/json", "User-Agent": "komak-morabi-publisher/1.0"}
+          H = {"Authorization": f"Basic {auth}", "X-Authorization": f"Basic {auth}", "Content-Type": "application/json", "User-Agent": "komak-morabi-publisher/1.0"}
           def call(method, route, data=None, **q):
               q["rest_route"] = route
               url = base + "/?" + urllib.parse.urlencode(q)
