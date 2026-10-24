@@ -1,4 +1,4 @@
-# Read-only diagnostics for WordPress REST login on masports.ir (publishes nothing). Run 8.
+# Read-only check of a published post on masports.ir (publishes nothing). Run 9.
 name: masports auth diagnose
 on:
   push:
@@ -8,23 +8,15 @@ jobs:
   diag:
     runs-on: ubuntu-latest
     steps:
-      - name: Probe
-        env:
-          WP_USER: ${{ secrets.WP_USER }}
-          WP_APP_PASSWORD: ${{ secrets.WP_APP_PASSWORD }}
+      - name: Check post 20641
         run: |
-          GOOD="Basic $(printf '%s' "$WP_USER:$WP_APP_PASSWORD" | base64 -w0)"
-          BAD="Basic $(printf '%s' "nobody-test:wrongwrongwrongwrongwrong" | base64 -w0)"
-          T=$(date +%s)
-          probe() { # label, method, url, auth
-            echo "=== $1"
-            curl -sS -m 60 -X "$2" -D h.txt -o b.txt -H "Authorization: $4" -H "X-Authorization: $4" \
-              -H "Content-Type: application/json" ${5:+--data "$5"} "$3" || true
-            grep -i -E "^(HTTP/|server|x-litespeed|x-cache|cf-cache|cache-control|age:|x-powered|x-wp|x-redirect|x-mas|set-cookie: wordpress_logged)" h.txt | tr -d '\r'
-            head -c 250 b.txt; echo; echo
-          }
-          probe "GET users/me GOOD (cache-busted)" GET "https://masports.ir/?rest_route=/wp/v2/users/me&_=$T" "$GOOD"
-          probe "GET users/me BAD  (cache-busted)" GET "https://masports.ir/?rest_route=/wp/v2/users/me&_=$T" "$BAD"
-          probe "GET wp-json users/me GOOD" GET "https://masports.ir/wp-json/wp/v2/users/me?_=$T" "$GOOD"
-          probe "POST posts BAD (draft, should be rejected)" POST "https://masports.ir/?rest_route=/wp/v2/posts" "$BAD" '{"title":"x","status":"draft"}'
-          probe "POST posts GOOD (DRY: invalid status so nothing is created)" POST "https://masports.ir/?rest_route=/wp/v2/posts" "$GOOD" '{"title":"x","status":"__invalid__"}'
+          curl -sS -m 60 "https://masports.ir/?rest_route=/wp/v2/posts/20641&_fields=content,featured_media,link" -o p.json || true
+          python3 - <<'PY'
+          import json
+          d=json.load(open("p.json")); c=d["content"]["rendered"]
+          print("link:", d.get("link")); print("featured_media:", d.get("featured_media"))
+          i=c.find("ad-banner")
+          print("ad banner present:", i>=0, "| <picture> kept:", "<picture" in c, "| <source> kept:", "<source" in c, "| position:", i, "of", len(c))
+          print(c[max(0,i-300):i+400] if i>=0 else "")
+          PY
+          curl -sS -m 60 "https://masports.ir/?rest_route=/wp/v2/media/20642&_fields=source_url,alt_text" ; echo
