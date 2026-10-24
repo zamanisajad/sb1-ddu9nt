@@ -11,11 +11,14 @@
 #   WP_APP_PASSWORD  «رمز برنامه» همان کاربر (نه رمز ورود)
 name: Publish articles to masports.ir
 
-# Automatic publishing is OFF (owner's choice, 2026-10-18): the host strips the
-# Authorization header, and the owner prefers to paste articles into WordPress by hand.
-# To turn it back on: fix the header on the host, then restore the push trigger below.
+# Automatic publishing is ON again (owner's choice, 2026-10-24) for articles whose
+# front matter has `wp: publish`. The host's header problem is fixed with
+# deliverables/wordpress/rest-auth-fix.php (mu-plugin) plus .htaccess.
 on:
   workflow_dispatch:
+  push:
+    paths:
+      - "articles/*.md"
 
 concurrency:
   group: publish-articles
@@ -101,6 +104,8 @@ jobs:
               with urllib.request.urlopen(req, timeout=60) as r: return json.loads(r.read() or "null")
           for f in os.environ["FILES"].split():
               head = open(f, encoding="utf-8").read().split("---")[1]
+              if not re.search(r"^wp:\s*publish", head, re.M):
+                  continue
               slug = re.search(r"^slug:\s*(\S+)", head, re.M).group(1).strip("\"'")
               when = dt.datetime.fromisoformat(re.search(r"^publish_at:\s*(\S+)", head, re.M).group(1).strip("\"'"))
               wait = (when - dt.datetime.now(dt.timezone.utc)).total_seconds() + 60

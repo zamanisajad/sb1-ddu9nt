@@ -21,6 +21,10 @@ Behavior:
   Tags are created if missing.
 
 Environment variables: WP_URL (e.g. https://masports.ir), WP_USER, WP_APP_PASSWORD.
+Only files whose front matter has `wp: publish` are sent; others are skipped
+(older articles the owner pasted by hand). A `<file>.cover.png` next to the
+article is uploaded as the featured image, with `image_alt` as its alt text.
+
 Usage: publish_to_wordpress.py FILE [FILE ...]   (add --dry-run to only validate)
 """
 import base64
@@ -29,6 +33,7 @@ import json
 import os
 import re
 import sys
+import time
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -80,19 +85,35 @@ class WP:
             "User-Agent": "komak-morabi-publisher/1.0",
         }
 
-    def call(self, method, route, data=None, query=None):
+    def call(self, method, route, data=None, query=None, raw=None, extra_headers=None):
         # ?rest_route= works even when pretty permalinks are off.
         params = {"rest_route": route}
         params.update(query or {})
         url = f"{self.base}/?{urllib.parse.urlencode(params)}"
-        body = json.dumps(data).encode() if data is not None else None
-        req = urllib.request.Request(url, data=body, method=method, headers=self.headers)
-        try:
-            with urllib.request.urlopen(req, timeout=60) as r:
-                return json.loads(r.read().decode() or "null")
-        except urllib.error.HTTPError as e:
-            detail = e.read().decode(errors="replace")[:500]
-            raise RuntimeError(f"{method} {route} -> HTTP {e.code}: {detail}") from None
+        body = raw if raw is not None else (json.dumps(data).encode() if data is not None else None)
+        headers = {**self.headers, **(extra_headers or {})}
+        for attempt in range(4):
+            req = urllib.request.Request(url, data=body, method=method, headers=headers)
+            try:
+                with urllib.request.urlopen(req, timeout=120) as r:
+                    return json.loads(r.read().decode() or "null")
+            except urllib.error.HTTPError as e:
+                detail = e.read().decode(errors="replace")[:500]
+                raise RuntimeError(f"{method} {route} -> HTTP {e.code}: {detail}") from None
+            except (urllib.error.URLError, ConnectionError, TimeoutError) as e:
+                # The host sometimes drops a connection; retry a few times.
+                print(f"network error on {method} {route} ({e}); retrying…")
+                time.sleep(5 * (attempt + 1))
+        raise RuntimeError(f"{method} {route}: network kept failing")
+
+    def upload_image(self, path, alt):
+        """Upload a PNG to the media library and set its alt text; returns the media id."""
+        name = "cover-" + os.path.basename(path)[:10] + ".png"   # ASCII file name (date)
+        media = self.call("POST", "/wp/v2/media", raw=open(path, "rb").read(), extra_headers={
+            "Content-Type": "image/png",
+            "Content-Disposition": f'attachment; filename="{name}"'})
+        self.call("POST", f"/wp/v2/media/{media['id']}", {"alt_text": alt, "title": alt})
+        return media["id"]
 
     def term_ids(self, taxonomy, names, create):
         """Look up term ids by exact name. Tags are created if missing; categories never are."""
@@ -127,12 +148,16 @@ def main(argv):
     articles = [(f, parse_article(f)) for f in files]  # validate everything first
     if dry:
         for f, a in articles:
-            print(f"OK  {f}: «{a['title']}» → {a['slug']} at {a['when'].isoformat()}")
+            flag = "will publish" if a.get("wp") == "publish" else "NOT marked for publishing (wp: publish)"
+            print(f"OK  {f}: «{a['title']}» → {a['slug']} at {a['when'].isoformat()} [{flag}]")
         return 0
 
     wp = WP(os.environ["WP_URL"], os.environ["WP_USER"], os.environ["WP_APP_PASSWORD"])
     now = dt.datetime.now(dt.timezone.utc)
     for f, a in articles:
+        if a.get("wp") != "publish":
+            print(f"skip {f}: front matter has no 'wp: publish' (owner publishes it by hand)")
+            continue
         future = a["when"] > now
         payload = {
             "title": a["title"],
@@ -145,6 +170,13 @@ def main(argv):
             "tags": wp.term_ids("tags", a.get("tags"), create=True),
         }
         existing = wp.find_post(a["slug"])
+        cover = f[:-3] + ".cover.png"
+        if os.path.exists(cover) and not (existing and existing.get("featured_media")):
+            try:
+                payload["featured_media"] = wp.upload_image(cover, a.get("image_alt") or a["title"])
+                print(f"uploaded featured image {payload['featured_media']}")
+            except RuntimeError as e:
+                print(f"warning: featured image upload failed: {e}")
         if existing and existing.get("status") == "publish" and future:
             payload["status"] = "publish"  # never un-publish a live post
         if existing:

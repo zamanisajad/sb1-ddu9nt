@@ -9,7 +9,7 @@ These articles are for **masports.ir**, the site «گروه ورزشی ما», w
   - the Markdown source (`articles/<date>-<slug>.md`) is committed
   - an HTML copy is rendered with `scripts/render_article_html.py`; it shows the SEO fields at the top, then the body for copy-paste
   - the HTML copy is sent to the owner in the conversation, with a short notice
-- **Automatic posting is off.** The host strips the login header. To re-enable it, see `.github/workflows/publish-articles.yml`.
+- **Direct publishing is ON (2026-10-24):** add `wp: publish` to the front matter. On push, GitHub Actions posts the article, uploads `<file>.cover.png` as the featured image with `image_alt`, and makes it live at `publish_at`. Older articles without the flag are never sent.
 - **Review:** the owner reads each article before pasting it. The skill's evidence rules still apply in full.
 
 ## File format
@@ -26,6 +26,7 @@ tags: [مربی بدنسازی, برنامه تمرینی]
 focus_keyword: کلمهٔ کلیدی اصلی (برای Rank Math)
 keywords: [۶ تا ۱۰ عبارت جست‌وجوی مرتبط و طولانی]
 image_alt: متن جایگزین تصویر شاخص، شامل کلمهٔ کلیدی اصلی
+wp: publish
 ---
 متن مقاله با Markdown (## و ### برای تیترها، فهرست، **پررنگ**)
 ```
