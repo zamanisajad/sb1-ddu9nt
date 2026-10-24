@@ -41,6 +41,32 @@ import urllib.request
 import markdown  # pip install markdown
 
 REQUIRED = ("title", "slug", "excerpt", "publish_at")
+AD_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "articles", "ad-banner.html")
+COVER_EXTS = ((".cover.webp", "image/webp"), (".cover.jpg", "image/jpeg"), (".cover.png", "image/png"))
+
+
+def insert_ad(html):
+    """Put the owner's ad banner (articles/ad-banner.html) in the middle of the article,
+    right before the H2 closest to the middle. No banner file → html unchanged."""
+    if not os.path.exists(AD_FILE):
+        return html
+    ad = open(AD_FILE, encoding="utf-8").read().strip()
+    starts = [m.start() for m in re.finditer(r"<h2[ >]", html)]
+    if len(starts) >= 2:
+        pos = starts[len(starts) // 2]
+    else:
+        paras = [m.end() for m in re.finditer(r"</p>", html)]
+        pos = paras[len(paras) // 2] if paras else len(html)
+    return html[:pos] + "\n" + ad + "\n" + html[pos:]
+
+
+def find_cover(md_path):
+    """The article's cover image next to it: owner-supplied .webp/.jpg wins over the generated .png."""
+    for ext, ctype in COVER_EXTS:
+        path = md_path[:-3] + ext
+        if os.path.exists(path):
+            return path, ctype
+    return None, None
 
 
 def parse_article(path):
@@ -71,7 +97,7 @@ def parse_article(path):
     if len(body) < 800:
         raise ValueError(f"{path}: article body looks too short ({len(body)} chars)")
     meta["when"] = when
-    meta["html"] = markdown.markdown(body, extensions=["extra", "sane_lists"])
+    meta["html"] = insert_ad(markdown.markdown(body, extensions=["extra", "sane_lists"]))
     return meta
 
 
@@ -106,14 +132,20 @@ class WP:
                 time.sleep(5 * (attempt + 1))
         raise RuntimeError(f"{method} {route}: network kept failing")
 
-    def upload_image(self, path, alt):
-        """Upload a PNG to the media library and set its alt text; returns the media id."""
-        name = "cover-" + os.path.basename(path)[:10] + ".png"   # ASCII file name (date)
+    def upload_image(self, path, alt, ctype="image/png"):
+        """Upload an image to the media library and set its alt text; returns the media id."""
+        name = os.path.basename(path)[:10] + "-" + cover_tag(path) + os.path.splitext(path)[1]  # ASCII: date-hash.ext
         media = self.call("POST", "/wp/v2/media", raw=open(path, "rb").read(), extra_headers={
-            "Content-Type": "image/png",
+            "Content-Type": ctype,
             "Content-Disposition": f'attachment; filename="{name}"'})
         self.call("POST", f"/wp/v2/media/{media['id']}", {"alt_text": alt, "title": alt})
         return media["id"]
+
+    def media_url(self, media_id):
+        try:
+            return self.call("GET", f"/wp/v2/media/{media_id}", query={"context": "edit"}).get("source_url", "")
+        except RuntimeError:
+            return ""
 
     def term_ids(self, taxonomy, names, create):
         """Look up term ids by exact name. Tags are created if missing; categories never are."""
@@ -137,6 +169,11 @@ class WP:
                           query={"slug": slug, "status": "publish,future,draft,pending,private",
                                  "context": "edit"})
         return found[0] if found else None
+
+
+def cover_tag(path):
+    import hashlib
+    return hashlib.sha1(open(path, "rb").read()).hexdigest()[:8]
 
 
 def main(argv):
@@ -170,13 +207,17 @@ def main(argv):
             "tags": wp.term_ids("tags", a.get("tags"), create=True),
         }
         existing = wp.find_post(a["slug"])
-        cover = f[:-3] + ".cover.png"
-        if os.path.exists(cover) and not (existing and existing.get("featured_media")):
-            try:
-                payload["featured_media"] = wp.upload_image(cover, a.get("image_alt") or a["title"])
-                print(f"uploaded featured image {payload['featured_media']}")
-            except RuntimeError as e:
-                print(f"warning: featured image upload failed: {e}")
+        cover, ctype = find_cover(f)
+        if cover:
+            current = wp.media_url(existing["featured_media"]) if existing and existing.get("featured_media") else ""
+            if cover_tag(cover) in current:
+                print("featured image already up to date")
+            else:
+                try:
+                    payload["featured_media"] = wp.upload_image(cover, a.get("image_alt") or a["title"], ctype)
+                    print(f"uploaded featured image {payload['featured_media']} ({os.path.basename(cover)})")
+                except RuntimeError as e:
+                    print(f"warning: featured image upload failed: {e}")
         if existing and existing.get("status") == "publish" and future:
             payload["status"] = "publish"  # never un-publish a live post
         if existing:
@@ -186,6 +227,15 @@ def main(argv):
             post = wp.call("POST", "/wp/v2/posts", payload)
             action = "created"
         print(f"{action} post {post['id']} [{post['status']}] «{a['title']}» → {post.get('link')}")
+        try:
+            saved = wp.call("GET", f"/wp/v2/posts/{post['id']}", query={"context": "edit"})
+            raw_html = (saved.get("content") or {}).get("raw", "")
+            if "ad-banner-desktop.webp" in raw_html:
+                print("ad banner: saved" + ("" if "<picture" in raw_html else " (WordPress removed <picture>/<source>; desktop image still shows)"))
+            elif os.path.exists(AD_FILE):
+                print("warning: ad banner was removed by WordPress filters")
+        except RuntimeError as e:
+            print(f"warning: could not re-read post: {e}")
     return 0
 
 
