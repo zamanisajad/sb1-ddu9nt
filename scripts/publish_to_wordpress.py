@@ -41,12 +41,12 @@ import urllib.request
 import markdown  # pip install markdown
 
 REQUIRED = ("title", "slug", "excerpt", "publish_at")
-AD_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "articles", "ad-banner.html")
+AD_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "ad-banner.html")
 COVER_EXTS = ((".cover.webp", "image/webp"), (".cover.jpg", "image/jpeg"), (".cover.png", "image/png"))
 
 
 def insert_ad(html):
-    """Put the owner's ad banner (articles/ad-banner.html) in the middle of the article,
+    """Put the owner's ad banner (scripts/ad-banner.html) in the middle of the article,
     right before the H2 closest to the middle. No banner file → html unchanged."""
     if not os.path.exists(AD_FILE):
         return html

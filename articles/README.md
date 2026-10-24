@@ -10,7 +10,7 @@ These articles are for **masports.ir**, the site «گروه ورزشی ما», w
   - an HTML copy is rendered with `scripts/render_article_html.py`; it shows the SEO fields at the top, then the body for copy-paste
   - the HTML copy is sent to the owner in the conversation, with a short notice
 - **Direct publishing is ON (2026-10-24):** add `wp: publish` to the front matter. On push, GitHub Actions posts the article, uploads `<file>.cover.png` as the featured image with `image_alt`, and makes it live at `publish_at`. Older articles without the flag are never sent.
-- **Ad banner (owner request, 2026-10-24):** the HTML in `articles/ad-banner.html` is inserted automatically in the middle of every article, before the H2 nearest the middle. Don't add it by hand.
+- **Ad banner (owner request, 2026-10-24):** the HTML in `scripts/ad-banner.html` is inserted automatically in the middle of every article, before the H2 nearest the middle. Don't add it by hand.
 - **Cover image:** if the owner supplies a `<file>.cover.webp` or `.cover.jpg`, it is used instead of the generated `.cover.png`. When the cover changes, the featured image on the site is replaced.
 - **Review:** the owner reads each article before pasting it. The skill's evidence rules still apply in full.
 
