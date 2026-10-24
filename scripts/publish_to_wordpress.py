@@ -164,12 +164,26 @@ class WP:
             ids.append(match["id"])
         return ids
 
-    def find_post(self, slug):
+    def find_post(self, slug, title=None, keyword=None):
+        """Find an existing post by slug; otherwise look for the owner's draft with the same
+        title (drafts often have no slug yet), so we update it instead of creating a duplicate."""
         found = self.call("GET", "/wp/v2/posts",
                           query={"slug": slug, "status": "publish,future,draft,pending,private",
                                  "context": "edit"})
-        return found[0] if found else None
-
+        if found:
+            return found[0]
+        if not (title or keyword):
+            return None
+        cands = self.call("GET", "/wp/v2/posts", query={
+            "search": keyword or title, "status": "draft,pending,future,private",
+            "context": "edit", "per_page": 20, "orderby": "modified", "order": "desc"})
+        norm = lambda s: re.sub(r"\s+", " ", (s or "").replace("\u200c", " ")).strip()
+        exact = [c for c in cands if norm(c["title"].get("raw")) == norm(title)]
+        loose = [c for c in cands if keyword and keyword in (c["title"].get("raw") or "")]
+        pick = (exact or loose or [None])[0]
+        if pick:
+            print(f"found existing draft {pick['id']} «{pick['title'].get('raw')}»; updating it")
+        return pick
 
 def cover_tag(path):
     import hashlib
@@ -206,7 +220,7 @@ def main(argv):
             "categories": wp.term_ids("categories", a.get("categories"), create=False),
             "tags": wp.term_ids("tags", a.get("tags"), create=True),
         }
-        existing = wp.find_post(a["slug"])
+        existing = wp.find_post(a["slug"], a["title"], a.get("focus_keyword"))
         cover, ctype = find_cover(f)
         if cover:
             current = wp.media_url(existing["featured_media"]) if existing and existing.get("featured_media") else ""
