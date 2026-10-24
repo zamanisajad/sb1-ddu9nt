@@ -1,56 +1,58 @@
 <!doctype html><html dir="rtl" lang="fa"><head><meta charset="utf-8"><title>۵۰ ایده برای جذب نوجوان‌ها</title>
 <style>
 @font-face{font-family:CT;src:url(CoachTitle.ttf)}@font-face{font-family:CB;src:url(CoachBody.ttf)}
-@page{size:A4;margin:16mm 15mm 18mm}
+@page{size:A4;margin:0}
+html.cv body{padding:0} html.cv body>*:not(.cover){display:none!important} html.cv .cover{display:flex}
+.bg{position:fixed;inset:0;width:210mm;height:297mm;background:url(theme-bg.webp) center/cover;z-index:-2}
+.veil{position:fixed;inset:0;width:210mm;height:297mm;background:rgba(255,255,255,.45);z-index:-1}
 *{box-sizing:border-box} ol{list-style-type:persian}
-body{font-family:CB;color:#2a2421;font-size:11.5pt;line-height:1.85;margin:0;background:#fff}
+body{font-family:CB;color:#2a2421;font-size:11.5pt;line-height:1.85;margin:0;padding:16mm 15mm 18mm;-webkit-box-decoration-break:clone;box-decoration-break:clone;background:transparent}
 a{color:#C9551C;text-decoration:none;word-break:break-all}
 h2,h3,.cover h1{font-family:CT;font-weight:normal}
-.cover{height:258mm;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;page-break-after:always;
- background:radial-gradient(90% 60% at 85% 0%,#FDDCC4 0%,rgba(253,220,196,0) 60%),radial-gradient(80% 50% at 0% 100%,#FCE3D2 0%,rgba(252,227,210,0) 60%),#FBF7F3;border-radius:10mm;padding:20mm}
+.cover{display:none;height:297mm;overflow:hidden;background:url(theme-bg.webp) center/cover;flex-direction:column;justify-content:flex-start;align-items:center;text-align:center;page-break-after:always;padding:38mm 25mm 0}
 .cover img{width:34mm;margin-bottom:8mm}
-.cover .tag{font-size:12pt;color:#C9551C;background:#fff;border-radius:99px;padding:2mm 6mm;margin-bottom:8mm}
+.cover .tag{font-size:12pt;color:#C9551C;background:rgba(255,255,255,.85);box-shadow:0 2mm 6mm -3mm rgba(140,63,25,.3);border-radius:99px;padding:2mm 6mm;margin-bottom:8mm}
 .cover h1{font-size:40pt;line-height:1.4;margin:0 0 4mm;color:#1F1A17}
 .cover h1 b{color:#F47B3B;font-weight:normal}
 .cover .sub{font-size:14pt;color:#4A423D;max-width:150mm}
 .cover .cats{margin-top:12mm;display:flex;flex-wrap:wrap;gap:3mm;justify-content:center}
 .cover .cats span{background:#fff;border-radius:99px;padding:1.5mm 5mm;font-size:11pt;box-shadow:0 2mm 6mm -3mm rgba(140,63,25,.35)}
-.cover .brand{margin-top:16mm;font-size:12pt;color:#6b605a}
+.cover .brand{margin-top:auto;margin-bottom:6mm;background:rgba(255,255,255,.8);border-radius:99px;padding:1.5mm 6mm;font-size:12pt;color:#6b605a}
 .sec{font-size:20pt;color:#1F1A17;border-right:2.2mm solid #F47B3B;padding-right:4mm;margin:9mm 0 4mm}
 .lead{font-size:12.5pt}
 .why-grid{display:grid;grid-template-columns:1fr 1fr;gap:4mm}
-.why{background:#FBF4EE;border-radius:4mm;padding:4mm 5mm;break-inside:avoid}
+.why{background:rgba(255,255,255,.82);box-shadow:0 3mm 8mm -5mm rgba(140,63,25,.35);border-radius:4mm;padding:4mm 5mm;break-inside:avoid}
 .why-h{font-family:CT;font-size:14pt;color:#C9551C}
 .why p{margin:1mm 0 0;font-size:10.5pt}
 .how li{margin-bottom:1.5mm}
-.check div{padding:2mm 4mm;border-radius:3mm;background:#F3F5F8;margin-bottom:2mm;break-inside:avoid}
+.check div{padding:2mm 4mm;border-radius:3mm;background:rgba(255,255,255,.82);box-shadow:0 2mm 5mm -4mm rgba(140,63,25,.3);margin-bottom:2mm;break-inside:avoid}
 table{width:100%;border-collapse:collapse;font-size:10pt}
-table th{background:#F47B3B;color:#fff;font-weight:bold;padding:2mm;text-align:right}
-table td{padding:1.6mm 2mm;border-bottom:.3mm solid #eee;vertical-align:top}
-table tr:nth-child(even) td{background:#FBF7F3}
+table th{background:#F2956A;color:#fff;font-weight:bold;padding:2mm;text-align:right}
+table td{padding:1.2mm 2mm;border-bottom:.3mm solid #eee;vertical-align:top;background:rgba(255,255,255,.8)}
+table tr:nth-child(even) td{background:rgba(253,236,224,.85)}
 td.n{font-family:CT;color:#C9551C;width:9mm;text-align:center}
 .plan td:first-child{white-space:nowrap;font-weight:bold;width:32mm}
 .toc{page-break-before:always}
-.cat{page-break-before:always;display:flex;gap:5mm;align-items:center;background:linear-gradient(135deg,#F47B3B,#F2A33A);color:#fff;border-radius:5mm;padding:6mm 7mm;margin-bottom:5mm}
+.cat{page-break-before:always;display:flex;gap:5mm;align-items:center;background:linear-gradient(135deg,rgba(244,123,59,.92),rgba(246,170,120,.88));color:#fff;box-shadow:0 4mm 10mm -6mm rgba(140,63,25,.5);border-radius:5mm;padding:6mm 7mm;margin-bottom:5mm}
 .cat-k{font-family:CT;font-size:38pt;width:18mm;height:18mm;border-radius:50%;background:rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center;flex:none}
 .cat h2{margin:0;font-size:22pt} .cat p{margin:1mm 0 0;font-size:11pt}
-.idea{border:.35mm solid #F1E4DA;border-radius:4mm;padding:4mm 5mm 3mm;margin-bottom:5mm;break-inside:avoid}
+.idea{background:rgba(255,255,255,.86);box-shadow:0 3mm 9mm -6mm rgba(140,63,25,.4);border-radius:4mm;padding:4mm 5mm 3mm;margin-bottom:5mm;break-inside:avoid}
 .ih{display:flex;gap:3mm;align-items:center}
 .num{font-family:CT;font-size:15pt;color:#fff;background:#F47B3B;min-width:10mm;height:10mm;border-radius:50%;display:flex;align-items:center;justify-content:center}
 .idea h3{margin:0;font-size:15.5pt;color:#1F1A17}
 .meta{margin:2mm 0}
-.chip{display:inline-block;font-size:9pt;background:#F3F5F8;border-radius:99px;padding:.3mm 3mm;margin:0 0 1mm 1.5mm;color:#4A423D}
+.chip{display:inline-block;font-size:9pt;background:#FBEDE3;border-radius:99px;padding:.3mm 3mm;margin:0 0 1mm 1.5mm;color:#4A423D}
 .why1{margin:1mm 0 2mm}
 .lbl{font-weight:bold;color:#C9551C;margin-bottom:.5mm}
 .st{margin:0 0 2mm;padding-right:6mm} .st li{margin-bottom:.8mm}
 .box{border-radius:3mm;padding:2mm 4mm;margin-top:2mm;font-size:10.5pt}
-.conv{background:#FFF1E7} .frn{background:#EEF4FB} .safe{background:#FDF0F0}
+.conv{background:rgba(253,226,206,.75)} .frn{background:rgba(232,240,250,.9)} .safe{background:rgba(252,232,232,.9)}
 .steps li{margin-bottom:2mm}
-.app{background:#F3F5F8;border-radius:4mm;padding:4mm 5mm;margin-top:5mm;break-inside:avoid}
+.app{background:rgba(255,255,255,.85);box-shadow:0 3mm 8mm -5mm rgba(140,63,25,.35);border-radius:4mm;padding:4mm 5mm;margin-top:5mm;break-inside:avoid}
 .app-h{font-family:CT;font-size:14pt}
 .src{font-size:9.5pt} .src li{margin-bottom:1mm}
 .note{font-size:9.5pt;color:#6b605a}
-</style></head><body>
+</style></head><body><div class="bg"></div><div class="veil"></div>
 <div class="cover"><img src="logo-mark.png"><div class="tag">ویژهٔ روز نوجوان (۸ آبان) و روز دانش‌آموز (۱۳ آبان)</div>
 <h1><b>۵۰ ایده</b> برای جذب<br>نوجوان‌ها و دانش‌آموزها</h1>
 <div class="sub">راهنمای عملی و قدم‌به‌قدم برای مربی‌های تک‌نفره، گروه‌های چند مربی، باشگاه‌ها، مدرسه‌ها و فضای آنلاین</div>
