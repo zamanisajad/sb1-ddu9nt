@@ -45,7 +45,7 @@ jobs:
             BEFORE=$(git rev-parse HEAD~1)
           fi
           # (only used if the push trigger is restored)
-          git diff --name-only --diff-filter=AM "$BEFORE" HEAD -- 'articles/*.md' | grep -v '/README.md$' > files.txt || true
+          git -c core.quotePath=false diff --name-only --diff-filter=AM "$BEFORE" HEAD -- 'articles/*.md' | grep -v '/README.md$' > files.txt || true
           echo "Articles in this push:"; cat files.txt
           echo "list=$(tr '\n' ' ' < files.txt)" >> "$GITHUB_OUTPUT"
 
