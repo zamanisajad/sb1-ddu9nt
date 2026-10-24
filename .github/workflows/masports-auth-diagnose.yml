@@ -1,4 +1,4 @@
-# Read-only check of a published post on masports.ir (publishes nothing). Run 9.
+# Read-only check of a published post on masports.ir (publishes nothing). Run 10.
 name: masports auth diagnose
 on:
   push:
@@ -8,7 +8,7 @@ jobs:
   diag:
     runs-on: ubuntu-latest
     steps:
-      - name: Check post 20641
+      - name: Check post 20641 banner markup
         run: |
           curl -sS -m 60 "https://masports.ir/?rest_route=/wp/v2/posts/20641&_fields=content,featured_media,link" -o p.json || true
           python3 - <<'PY'
@@ -17,6 +17,6 @@ jobs:
           print("link:", d.get("link")); print("featured_media:", d.get("featured_media"))
           i=c.find("ad-banner")
           print("ad banner present:", i>=0, "| <picture> kept:", "<picture" in c, "| <source> kept:", "<source" in c, "| position:", i, "of", len(c))
-          print(c[max(0,i-300):i+400] if i>=0 else "")
+          s=c.rfind("<a ",0,i); e=c.find("</a>",i); print(repr(c[s-60:e+4]))
           PY
           curl -sS -m 60 "https://masports.ir/?rest_route=/wp/v2/media/20642&_fields=source_url,alt_text" ; echo
