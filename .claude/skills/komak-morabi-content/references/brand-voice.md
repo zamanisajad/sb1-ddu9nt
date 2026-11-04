@@ -3,7 +3,9 @@
 ## Positioning
 - Name: **کمک مربی** (Coach Assistant).
 - Positioning: **«کمک مربی؛ دستیار دیجیتال مربیان ورزشی»**.
-- Promise: **«مدیریت کمتر، مربیگری بیشتر.»**
+- Official slogan (owner, 2026-11): **«تو مربیگری کن، زیرساختش با ما»**.
+- Secondary promise (landing page): **«مدیریت کمتر، مربیگری بیشتر.»**
+- Exact colours, fonts, logo and mascot rules: `.claude/skills/coach-assistant-content-lab/references/brand-book.md`.
 - Mission: coaches spend less time on repetitive work and more on coaching, service quality, and growing their professional business.
 - Vision: a professional network and digital home for coaches in Iran, more than another app. Mention the vision only in community, brand or long-form content. Don't use it as a claim of current features.
 
