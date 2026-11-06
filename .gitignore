@@ -1,2 +1,8 @@
 __pycache__/
 *.pyc
+# video build intermediates
+deliverables/*/source/node_modules/
+deliverables/*/source/fr*/
+deliverables/*/source/pv/
+deliverables/*/source/stock/
+deliverables/*/source/package-lock.json

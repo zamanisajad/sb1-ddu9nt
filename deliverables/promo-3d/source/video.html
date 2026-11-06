@@ -1,0 +1,324 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+@font-face{font-family:CT;src:url(CoachTitle.ttf)}
+@font-face{font-family:CB;src:url(CoachBody.ttf)}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:1080px;height:1920px;overflow:hidden;background:#F3F5F8}
+#stage{position:absolute;inset:0;overflow:hidden;perspective:2200px;
+  background:radial-gradient(90% 55% at 85% 8%,#FDDCC4 0%,rgba(253,220,196,0) 60%),
+             radial-gradient(80% 45% at 5% 95%,#FCE3D2 0%,rgba(252,227,210,0) 60%),
+             linear-gradient(180deg,#F7F8FA 0%,#EEF1F5 100%)}
+#cam{position:absolute;inset:0;transform-origin:540px 960px;transform-style:preserve-3d}
+.floor{position:absolute;left:-200px;right:-200px;top:1500px;height:900px;
+  background:radial-gradient(60% 40% at 50% 0%,rgba(30,41,59,.07),rgba(30,41,59,0) 70%)}
+.glass{position:absolute;border-radius:40px;background:linear-gradient(135deg,rgba(255,255,255,.55),rgba(255,255,255,.12));
+  border:2px solid rgba(255,255,255,.7);box-shadow:0 30px 60px -30px rgba(30,41,59,.25);backdrop-filter:blur(6px)}
+.phone{position:absolute;left:0;top:0;width:400px;height:820px;border-radius:64px;padding:14px;
+  background:linear-gradient(160deg,#2A3447 0%,#161D2B 55%,#10161F 100%);
+  box-shadow:0 70px 110px -40px rgba(16,22,31,.55),0 0 0 2px #39445A inset,0 2px 0 rgba(255,255,255,.12) inset;
+  transform-origin:200px 410px}
+.phone .scr{position:relative;width:100%;height:100%;border-radius:50px;overflow:hidden;
+  background:linear-gradient(180deg,#141C2A,#0E141F)}
+.phone .notch{position:absolute;top:22px;left:50%;width:110px;height:30px;margin-left:-55px;border-radius:20px;background:#05080D;z-index:9}
+.phone .shine{position:absolute;inset:0;border-radius:50px;pointer-events:none;
+  background:linear-gradient(120deg,rgba(255,255,255,.10) 0%,rgba(255,255,255,0) 35%);z-index:8}
+.layer{position:absolute;inset:0;padding:78px 22px 24px}
+.card{background:#1E2738;border-radius:26px;box-shadow:0 1px 0 rgba(255,255,255,.05) inset}
+.bar{height:12px;border-radius:8px;background:#3A4559}
+.bar.l{background:#55617A}
+.av{border-radius:50%;display:flex;align-items:center;justify-content:center;flex:none}
+.row{display:flex;align-items:center;gap:16px}
+.stars{display:flex;gap:4px}
+.btn{border-radius:999px;background:linear-gradient(135deg,#F7975F,#F47B3B);display:flex;align-items:center;justify-content:center;
+  box-shadow:0 14px 30px -10px rgba(244,123,59,.7)}
+.ico{display:block}
+.panel{position:absolute;border-radius:44px;background:rgba(24,32,48,.80);border:2px solid rgba(255,255,255,.14);
+  box-shadow:0 60px 100px -40px rgba(16,22,31,.6),0 0 0 1px rgba(244,123,59,.06);backdrop-filter:blur(14px)}
+.chip{border-radius:999px;background:#2A3448;color:#E9EDF5;font-family:CT;font-size:26px;padding:6px 18px;display:inline-block}
+.ripple{position:absolute;border-radius:50%;border:4px solid rgba(255,255,255,.9);pointer-events:none}
+svg#paths{position:absolute;inset:0;width:1080px;height:1920px;overflow:visible;pointer-events:none}
+.badge{position:absolute;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 20px 40px -14px rgba(0,0,0,.4)}
+.coin{position:absolute;width:64px;height:64px;margin:-32px 0 0 -32px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#FFE2A8,#F2A33A 55%,#D9832A);box-shadow:0 0 30px rgba(244,163,58,.8);
+  display:flex;align-items:center;justify-content:center}
+#endcard{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:300px;opacity:0}
+#endcard .name{font-family:CT;font-size:120px;color:#1F1A17;line-height:1.2}
+#endcard .tag{font-family:CB;font-weight:700;font-size:52px;color:#4A423D;margin-top:18px}
+#endcard .tag b{color:#F47B3B}
+#endcard .rule{width:120px;height:6px;border-radius:6px;background:#F47B3B;margin-top:34px}
+</style></head><body>
+<div id="stage">
+  <div id="cam">
+    <div class="floor"></div>
+    <div class="glass" id="g1" style="width:420px;height:300px;left:-80px;top:180px"></div>
+    <div class="glass" id="g2" style="width:300px;height:420px;left:820px;top:1180px"></div>
+    <div class="glass" id="g3" style="width:240px;height:160px;left:640px;top:120px;border-radius:30px"></div>
+    <svg id="paths"><defs>
+      <linearGradient id="og" x1="0" x2="1"><stop offset="0" stop-color="#F9B48C"/><stop offset=".5" stop-color="#F47B3B"/><stop offset="1" stop-color="#F46344"/></linearGradient>
+      <filter id="glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="10"/></filter>
+      <radialGradient id="pg"><stop offset="0" stop-color="#fff"/><stop offset=".35" stop-color="#FFD2B3"/><stop offset="1" stop-color="rgba(244,123,59,0)"/></radialGradient>
+    </defs><g id="pathg"></g></svg>
+    <div id="world"></div>
+  </div>
+  <div id="endcard"><div class="name" id="ecName"></div><div class="tag" id="ecTag"></div><div class="rule"></div></div>
+</div>
+<script>
+// ---------- helpers ----------
+const cl=(x,a=0,b=1)=>Math.min(b,Math.max(a,x));
+const P=(t,a,b)=>cl((t-a)/(b-a));
+const io=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
+const ob=x=>{const c1=1.70158,c3=c1+1;return 1+c3*Math.pow(x-1,3)+c1*Math.pow(x-1,2)};
+const lerp=(a,b,x)=>a+(b-a)*x;
+function kf(keys,t){ // keys: [t, ...vals]
+  if(t<=keys[0][0]) return keys[0].slice(1);
+  for(let i=0;i<keys.length-1;i++){const a=keys[i],b=keys[i+1];
+    if(t<=b[0]){const x=io(P(t,a[0],b[0]));return a.slice(1).map((v,j)=>lerp(v,b[j+1],x));}}
+  return keys[keys.length-1].slice(1);
+}
+const $=(h)=>{const d=document.createElement('div');d.innerHTML=h.trim();return d.firstChild};
+// ---------- icons ----------
+const I={
+ user:(c='#fff',s=40)=>`<svg class="ico" width="${s}" height="${s}" viewBox="0 0 24 24" fill="${c}"><circle cx="12" cy="8" r="4.2"/><path d="M3.5 21c.8-4.4 4.3-7 8.5-7s7.7 2.6 8.5 7z"/></svg>`,
+ star:(c='#F2A33A',s=18)=>`<svg class="ico" width="${s}" height="${s}" viewBox="0 0 24 24" fill="${c}"><path d="M12 2.5l2.9 6.2 6.8.7-5.1 4.6 1.5 6.7L12 17.3 5.9 20.7l1.5-6.7L2.3 9.4l6.8-.7z"/></svg>`,
+ send:(c='#fff',s=40)=>`<svg class="ico" width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2.2" stroke-linejoin="round"><path d="M21 3L3 10.5l7 2.5 2.5 7z"/><path d="M21 3L10 13"/></svg>`,
+ check:(c='#fff',s=60)=>`<svg class="ico" width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>`,
+ x:(c='#fff',s=60)=>`<svg class="ico" width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="3" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>`,
+ target:(c='#F47B3B',s=44)=>`<svg class="ico" width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.6" fill="${c}"/></svg>`,
+ bolt:(c='#F2A33A',s=44)=>`<svg class="ico" width="${s}" height="${s}" viewBox="0 0 24 24" fill="${c}"><path d="M13 2L4 14h6l-1 8 9-12h-6z"/></svg>`,
+ heart:(c='#F46344',s=44)=>`<svg class="ico" width="${s}" height="${s}" viewBox="0 0 24 24" fill="${c}"><path d="M12 21s-8-5.1-8-11a4.6 4.6 0 0 1 8-3.1A4.6 4.6 0 0 1 20 10c0 5.9-8 11-8 11z"/></svg>`,
+ cal:(c='#9FB3D9',s=44)=>`<svg class="ico" width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2"><rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>`,
+ scale:(c='#9FB3D9',s=44)=>`<svg class="ico" width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2"><rect x="3.5" y="3.5" width="17" height="17" rx="4"/><path d="M8.5 9.5a4.5 4.5 0 0 1 7 0L12 12z" fill="${c}"/></svg>`,
+ dumb:(c='#F47B3B',s=48)=>`<svg class="ico" width="${s}" height="${s}" viewBox="0 0 24 24" fill="${c}"><rect x="1.5" y="9" width="3" height="6" rx="1"/><rect x="4.5" y="7" width="3" height="10" rx="1"/><rect x="7.5" y="11" width="9" height="2"/><rect x="16.5" y="7" width="3" height="10" rx="1"/><rect x="19.5" y="9" width="3" height="6" rx="1"/></svg>`,
+ run:(c='#F47B3B',s=48)=>`<svg class="ico" width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="14" cy="4.5" r="2" fill="${c}"/><path d="M6 20l3.5-5 3 2 1.5-5 3.5 3.5H20M9 9.5l3-2 2.5 2.5"/></svg>`,
+ push:(c='#F47B3B',s=48)=>`<svg class="ico" width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2.2" stroke-linecap="round"><circle cx="19.5" cy="9" r="2" fill="${c}"/><path d="M3 15.5l14-4.5M17.5 11v6M2 19.5h20"/></svg>`,
+ kettle:(c='#F47B3B',s=48)=>`<svg class="ico" width="${s}" height="${s}" viewBox="0 0 24 24" fill="${c}"><path d="M8 7a4 4 0 0 1 8 0v1h-2V7a2 2 0 0 0-4 0v1H8z"/><circle cx="12" cy="15" r="6.5"/></svg>`,
+ lock:(c='#fff',s=90)=>`<svg class="ico" width="${s}" height="${s*1.15}" viewBox="0 0 24 28"><path class="shk" d="M7 12V8a5 5 0 0 1 10 0v4" fill="none" stroke="${c}" stroke-width="2.6" stroke-linecap="round"/><rect x="4" y="12" width="16" height="13" rx="3.5" fill="${c}"/><circle cx="12" cy="18" r="2" fill="#F47B3B"/></svg>`,
+ card:(s=220)=>`<svg class="ico" width="${s}" height="${s*0.63}" viewBox="0 0 100 63"><defs><linearGradient id="cg" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#F7975F"/><stop offset="1" stop-color="#F46344"/></linearGradient></defs><rect width="100" height="63" rx="9" fill="url(#cg)"/><rect x="10" y="16" width="16" height="12" rx="3" fill="#FFE2A8"/><rect x="10" y="40" width="44" height="5" rx="2.5" fill="rgba(255,255,255,.7)"/><circle cx="78" cy="46" r="7" fill="rgba(255,255,255,.55)"/><circle cx="86" cy="46" r="7" fill="rgba(255,255,255,.35)"/></svg>`,
+ wallet:(c='#F47B3B',s=120)=>`<svg class="ico" width="${s}" height="${s}" viewBox="0 0 24 24" fill="none"><path d="M4 7.5A2.5 2.5 0 0 1 6.5 5H18v3" stroke="${c}" stroke-width="1.8"/><rect x="3.5" y="7.5" width="17.5" height="12" rx="3" fill="${c}"/><rect x="15" y="11.5" width="6" height="4" rx="2" fill="#FFE2A8"/></svg>`,
+ coin:(s=34)=>`<svg class="ico" width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="#8A4B12" stroke-width="2.4" stroke-linecap="round"><path d="M12 6v12M8.5 9.5c0-1.4 1.6-2.5 3.5-2.5s3.5 1 3.5 2.3c0 3-7 1.6-7 5 0 1.4 1.6 2.5 3.5 2.5s3.5-1.1 3.5-2.5"/></svg>`,
+ play:(c='#fff',s=40)=>`<svg class="ico" width="${s}" height="${s}" viewBox="0 0 24 24" fill="${c}"><path d="M8 5v14l11-7z"/></svg>`,
+ doc:(s=120)=>`<svg class="ico" width="${s}" height="${s}" viewBox="0 0 24 24"><rect x="4" y="2.5" width="16" height="19" rx="3" fill="#F47B3B"/><rect x="7.5" y="7" width="9" height="2" rx="1" fill="#fff"/><rect x="7.5" y="11" width="9" height="2" rx="1" fill="rgba(255,255,255,.75)"/><rect x="7.5" y="15" width="6" height="2" rx="1" fill="rgba(255,255,255,.55)"/></svg>`,
+ bell:(c='#fff',s=34)=>`<svg class="ico" width="${s}" height="${s}" viewBox="0 0 24 24" fill="${c}"><path d="M12 3a6 6 0 0 0-6 6v4l-2 3h16l-2-3V9a6 6 0 0 0-6-6zM9.5 18.5a2.5 2.5 0 0 0 5 0z"/></svg>`,
+};
+const AVC=['#7AA7E0','#F7975F','#8FD1B5','#C9A2E8','#F2A33A'];
+const avatar=(i,s)=>`<div class="av" style="width:${s}px;height:${s}px;background:linear-gradient(140deg,${AVC[i%5]},${AVC[(i+2)%5]})">${I.user('rgba(255,255,255,.95)',s*0.62)}</div>`;
+const stars=n=>`<div class="stars">${Array.from({length:5},(_,k)=>I.star(k<n?'#F2A33A':'#3A4559',18)).join('')}</div>`;
+
+// ---------- build phones ----------
+const world=document.getElementById('world');
+function mkPhone(id){const p=$(`<div class="phone" id="${id}"><div class="scr"><div class="notch"></div><div class="shine"></div></div></div>`);world.appendChild(p);return p;}
+const A=mkPhone('A'), C=mkPhone('C');
+const As=A.querySelector('.scr'), Cs=C.querySelector('.scr');
+// A: coach list
+const Alist=$(`<div class="layer" id="Alist">
+ <div class="row" style="margin-bottom:26px">${avatar(0,54)}<div class="card" style="flex:1;height:54px;border-radius:30px;display:flex;align-items:center;padding:0 18px"><div class="bar" style="width:60%"></div></div></div>
+ ${[1,2,3].map(i=>`<div class="card coachcard" style="padding:20px;margin-bottom:18px;display:flex;gap:18px;align-items:center;border:3px solid transparent">
+   ${avatar(i,84)}<div style="flex:1"><div class="bar l" style="width:${[70,85,60][i-1]}%;margin-bottom:12px"></div><div class="bar" style="width:${[45,55,40][i-1]}%;margin-bottom:12px"></div>${stars([4,5,4][i-1])}</div></div>`).join('')}
+ <div class="btn" id="reqBtn" style="position:absolute;left:40px;right:40px;bottom:46px;height:96px;gap:16px">${I.send('#fff',46)}</div>
+</div>`); As.appendChild(Alist);
+// A: plan (locked/unlocked)
+const planRows=(big)=>[['push','3×12'],['dumb','4×10'],['kettle','3×15'],['run','20′']].map(([ic,ch],k)=>`<div class="card prow" style="padding:${big?22:16}px;margin-bottom:${big?18:14}px;display:flex;align-items:center;gap:${big?20:14}px">
+   <div style="width:${big?84:66}px;height:${big?84:66}px;border-radius:22px;background:rgba(244,123,59,.14);display:flex;align-items:center;justify-content:center">${I[ic]('#F47B3B',big?52:40)}</div>
+   <div style="flex:1"><div class="bar l" style="width:${[70,60,75,55][k]}%;margin-bottom:12px"></div><div class="bar" style="width:${[40,50,35,45][k]}%"></div></div>
+   <span class="chip" style="${big?'':'font-size:22px;padding:4px 12px'}">${ch}</span></div>`).join('');
+const days=(s)=>`<div style="display:flex;justify-content:space-between;margin-bottom:24px">${[1,0,1,0,1,0,0].map(f=>`<div style="width:${s}px;height:${s}px;border-radius:50%;background:${f?'#F47B3B':'#2A3448'};box-shadow:${f?'0 0 18px rgba(244,123,59,.6)':'none'}"></div>`).join('')}</div>`;
+const Aplan=$(`<div class="layer" id="Aplan"><div id="AplanBody">${days(36)}${planRows(false)}</div>
+ <div id="lockWrap" style="position:absolute;left:0;right:0;top:250px;display:flex;justify-content:center">
+   <div style="width:190px;height:190px;border-radius:50%;background:rgba(244,123,59,.92);display:flex;align-items:center;justify-content:center;box-shadow:0 0 60px rgba(244,123,59,.6)" id="lockC">${I.lock('#fff',84)}</div></div>
+ <div id="paySheet" class="card" style="position:absolute;left:14px;right:14px;bottom:14px;height:400px;border-radius:40px;background:#232D40;padding:34px 28px;display:flex;flex-direction:column;align-items:center;gap:30px">
+   <div style="width:70px;height:8px;border-radius:6px;background:#3A4559"></div>
+   <div style="display:flex;align-items:center;gap:24px">${I.card(200)}<div class="coin" style="position:relative;margin:0;width:78px;height:78px">${I.coin(40)}</div></div>
+   <div class="btn" id="payBtn" style="width:100%;height:100px">${I.check('#fff',56)}</div></div>
+ <div id="playBtn" class="btn" style="position:absolute;left:50%;bottom:60px;width:120px;height:120px;margin-left:-60px;opacity:0">${I.play('#fff',54)}</div>
+</div>`); As.appendChild(Aplan);
+// C: home + incoming request
+const Chome=$(`<div class="layer" id="Chome">
+ <div class="row" style="margin-bottom:26px">${avatar(4,54)}<div class="card" style="flex:1;height:54px;border-radius:30px"></div></div>
+ <div class="card" style="height:150px;margin-bottom:18px;padding:22px"><div class="bar l" style="width:50%;margin-bottom:16px"></div><div style="display:flex;gap:10px;align-items:flex-end;height:60px">${[30,45,38,60,52,70,64].map(h=>`<div style="flex:1;height:${h}px;border-radius:8px;background:#2E394D"></div>`).join('')}</div></div>
+ <div class="card" id="reqCard" style="padding:20px;display:flex;gap:18px;align-items:center;border:3px solid #F47B3B;box-shadow:0 0 40px rgba(244,123,59,.35)">
+   ${avatar(1,84)}<div style="flex:1"><div class="bar l" style="width:70%;margin-bottom:12px"></div><div class="bar" style="width:45%"></div></div>
+   <div style="width:44px;height:44px;border-radius:50%;background:#F47B3B;display:flex;align-items:center;justify-content:center">${I.bell('#fff',26)}</div></div>
+</div>`); Cs.appendChild(Chome);
+// C: wallet
+const Cwallet=$(`<div class="layer" id="Cwallet">
+ <div id="notif" class="card" style="position:absolute;left:18px;right:18px;top:70px;height:110px;border-radius:30px;background:#2A3448;display:flex;align-items:center;gap:18px;padding:0 20px;z-index:3">
+   <div class="coin" style="position:relative;margin:0;width:66px;height:66px">${I.coin(34)}</div><div style="flex:1"><div class="bar l" style="width:70%;margin-bottom:12px"></div><div class="bar" style="width:40%"></div></div>
+   <div style="width:52px;height:52px;border-radius:50%;background:#22C55E;display:flex;align-items:center;justify-content:center">${I.check('#fff',34)}</div></div>
+ <div style="display:flex;flex-direction:column;align-items:center;margin-top:150px">
+   <div id="walletIco" style="width:210px;height:210px;border-radius:60px;background:rgba(244,123,59,.12);display:flex;align-items:center;justify-content:center">${I.wallet('#F47B3B',150)}</div>
+   <div id="balBar" style="width:280px;height:22px;border-radius:12px;background:#2A3448;margin-top:34px;overflow:hidden"><div id="balFill" style="height:100%;width:40%;border-radius:12px;background:linear-gradient(90deg,#F9B48C,#F47B3B)"></div></div>
+   <div style="display:flex;gap:14px;align-items:flex-end;height:170px;margin-top:40px;width:300px">${[50,70,60,90,80].map((h,k)=>`<div style="flex:1;height:${h}px;border-radius:10px;background:#2E394D"></div>`).join('')}<div id="newBar" style="flex:1;height:10px;border-radius:10px;background:linear-gradient(180deg,#F7975F,#F47B3B);box-shadow:0 0 24px rgba(244,123,59,.6)"></div></div>
+ </div></div>`); Cs.appendChild(Cwallet);
+// C: logo screen
+const Clogo=$(`<div class="layer" id="Clogo" style="background:linear-gradient(180deg,#FFFFFF,#FBF1EA);display:flex;align-items:center;justify-content:center;padding:0"><img src="logo-mark.png" style="width:230px;height:230px"></div>`); Cs.appendChild(Clogo);
+
+// ---------- floating panels ----------
+const prof=$(`<div class="panel" id="prof" style="left:110px;top:150px;width:860px;padding:44px 48px">
+  <div class="row" style="gap:32px;margin-bottom:36px">${avatar(1,170)}<div style="flex:1"><div class="bar l" style="width:75%;height:20px;margin-bottom:20px"></div>
+   <div class="row" style="gap:14px">${I.cal('#9FB3D9',40)}<div class="bar" style="width:120px;height:16px"></div>${I.scale('#9FB3D9',40)}<div class="bar" style="width:100px;height:16px"></div></div></div></div>
+  ${[['target','#F47B3B',.72],['bolt','#F2A33A',.55],['heart','#F46344',1]].map(([ic,c,f],k)=>`<div class="row prof-row" style="margin-bottom:26px;gap:24px">
+    <div style="width:76px;height:76px;border-radius:24px;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center">${I[ic](c,44)}</div>
+    ${k===1?`<div style="flex:1;display:flex;gap:10px">${[1,1,1,0,0].map(o=>`<div style="flex:1;height:22px;border-radius:8px;background:${o?'#F2A33A':'#3A4559'}"></div>`).join('')}</div>`
+     :k===2?`<div style="flex:1;display:flex;gap:16px">${['heart','bolt'].map(()=>`<div style="width:56px;height:56px;border-radius:50%;background:rgba(34,197,94,.18);display:flex;align-items:center;justify-content:center">${I.check('#22C55E',34)}</div>`).join('')}<div class="bar" style="flex:1;height:18px;align-self:center"></div></div>`
+     :`<div style="flex:1;height:22px;border-radius:12px;background:#3A4559;overflow:hidden"><div style="width:${f*100}%;height:100%;background:linear-gradient(90deg,#F9B48C,#F47B3B)"></div></div>`}
+  </div>`).join('')}
+  <div id="lens" style="position:absolute;width:150px;height:150px;border-radius:50%;border:8px solid rgba(255,255,255,.85);background:rgba(255,255,255,.08);box-shadow:0 20px 40px -10px rgba(0,0,0,.4)">
+   <div style="position:absolute;width:70px;height:16px;border-radius:8px;background:rgba(255,255,255,.85);right:-62px;bottom:-14px;transform:rotate(45deg)"></div></div>
+</div>`); world.appendChild(prof);
+const reqMini=(i,id)=>$(`<div class="panel" id="${id}" style="width:400px;padding:34px;display:flex;flex-direction:column;align-items:center;gap:22px">
+  ${avatar(i,150)}<div class="bar l" style="width:70%;height:18px"></div><div class="bar" style="width:50%;height:14px"></div>
+  <div class="row" style="gap:12px">${I.target('#F47B3B',38)}${I.bolt('#F2A33A',38)}${I.heart('#F46344',38)}</div>
+  <div class="badge" style="width:120px;height:120px;right:-30px;top:-30px;background:${i===2?'#EF4444':'#22C55E'}">${i===2?I.x('#fff',70):I.check('#fff',74)}</div></div>`);
+const rejC=reqMini(2,'rej'), accC=reqMini(1,'acc'); world.appendChild(rejC); world.appendChild(accC);
+const planner=$(`<div class="panel" id="planner" style="left:90px;top:330px;width:900px;padding:48px">
+  <div class="row" style="margin-bottom:34px;gap:22px">${avatar(1,96)}<div style="flex:1"><div class="bar l" style="width:60%;height:18px;margin-bottom:14px"></div><div class="bar" style="width:35%;height:14px"></div></div>
+   <div style="width:86px;height:86px;border-radius:26px;background:rgba(244,123,59,.15);display:flex;align-items:center;justify-content:center">${I.cal('#F47B3B',50)}</div></div>
+  ${days(58)}${planRows(true)}
+  <div id="pen" style="position:absolute;width:44px;height:44px;border-radius:50%;background:#fff;box-shadow:0 0 0 10px rgba(255,255,255,.25),0 10px 20px rgba(0,0,0,.3)"></div>
+</div>`); world.appendChild(planner);
+const docEl=$(`<div style="position:absolute;left:0;top:0;width:150px;height:150px;margin:-75px 0 0 -75px;border-radius:40px;background:rgba(255,255,255,.95);display:flex;align-items:center;justify-content:center;box-shadow:0 0 60px rgba(244,123,59,.55)">${I.doc(110)}</div>`); world.appendChild(docEl);
+const coins=[0,1,2].map(()=>{const c=$(`<div class="coin">${I.coin(34)}</div>`);world.appendChild(c);return c});
+// coach character (brand mascot-style: blue headband)
+const coach=$(`<div style="position:absolute;left:640px;top:820px;width:380px;height:460px">
+ <svg width="380" height="460" viewBox="0 0 380 460">
+  <defs><linearGradient id="sk" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#F6D2B3"/><stop offset="1" stop-color="#E9B892"/></linearGradient></defs>
+  <ellipse cx="190" cy="445" rx="130" ry="14" fill="rgba(30,41,59,.12)"/>
+  <path d="M60 440c6-90 60-140 130-140s124 50 130 140z" fill="#BFD7F2"/>
+  <path d="M150 300l40 50 40-50" fill="none" stroke="#1F2A3D" stroke-width="5"/><circle cx="190" cy="352" r="9" fill="#9AA6B8"/>
+  <circle cx="190" cy="180" r="112" fill="url(#sk)"/>
+  <path d="M82 160c4-70 54-104 108-104s104 34 108 104c-30-30-70-44-108-44s-78 14-108 44z" fill="#5A3A28"/>
+  <path d="M84 150c30-24 66-34 106-34s76 10 106 34l-4 22c-30-22-64-30-102-30s-72 8-102 30z" fill="#3B82C4"/>
+  <ellipse cx="148" cy="190" rx="13" ry="16" fill="#1F1A17"/><ellipse cx="232" cy="190" rx="13" ry="16" fill="#1F1A17"/>
+  <circle cx="152" cy="185" r="4.5" fill="#fff"/><circle cx="236" cy="185" r="4.5" fill="#fff"/>
+  <ellipse cx="125" cy="228" rx="18" ry="10" fill="rgba(244,123,59,.25)"/><ellipse cx="255" cy="228" rx="18" ry="10" fill="rgba(244,123,59,.25)"/>
+  <path id="mouth" d="M150 232q40 34 80 0" fill="none" stroke="#1F1A17" stroke-width="7" stroke-linecap="round"/>
+ </svg>
+ <div id="spark" style="position:absolute;left:300px;top:20px">${I.star('#F2A33A',70)}</div>
+ <div id="spark2" style="position:absolute;left:10px;top:70px">${I.star('#F47B3B',46)}</div>
+</div>`); world.appendChild(coach);
+const athMini=$(`<div class="av" style="position:absolute;width:150px;height:150px;left:80px;top:430px;background:linear-gradient(140deg,#F7975F,#7AA7E0);box-shadow:0 20px 40px -14px rgba(0,0,0,.35)">${I.user('#fff',96)}</div>`); world.appendChild(athMini);
+const ripple=$(`<div class="ripple"></div>`); world.appendChild(ripple);
+
+// ---------- path layer ----------
+const pg=document.getElementById('pathg');
+function mkPath(){const g=document.createElementNS('http://www.w3.org/2000/svg','g');
+ g.innerHTML=`<path class="gl" fill="none" stroke="#F47B3B" stroke-width="26" stroke-linecap="round" filter="url(#glow)" opacity=".55" pathLength="1"/>
+ <path class="ln" fill="none" stroke="url(#og)" stroke-width="10" stroke-linecap="round" pathLength="1"/>
+ <circle class="pl" r="34" fill="url(#pg)"/><circle class="pc" r="11" fill="#fff"/>`;pg.appendChild(g);return g;}
+const paths=[0,1,2,3,4,5,6].map(mkPath);
+function bez(p0,p1,p2,p3,x){const u=1-x;return [u*u*u*p0[0]+3*u*u*x*p1[0]+3*u*x*x*p2[0]+x*x*x*p3[0],u*u*u*p0[1]+3*u*u*x*p1[1]+3*u*x*x*p2[1]+x*x*x*p3[1]];}
+function setPath(g,a,b,draw,pulse,op=1,bend=1){
+ const c1=[a[0]+(b[0]-a[0])*0.1+260*bend, a[1]+(b[1]-a[1])*0.35], c2=[b[0]-(b[0]-a[0])*0.1-260*bend, b[1]-(b[1]-a[1])*0.35];
+ const d=`M${a[0]},${a[1]} C${c1[0]},${c1[1]} ${c2[0]},${c2[1]} ${b[0]},${b[1]}`;
+ g.style.opacity=op;
+ for(const p of g.querySelectorAll('path')){p.setAttribute('d',d);p.style.strokeDasharray='1 1';p.style.strokeDashoffset=1-draw;}
+ const show=pulse>0&&pulse<1;const pt=bez(a,c1,c2,b,cl(pulse));
+ for(const c of g.querySelectorAll('circle')){c.setAttribute('cx',pt[0]);c.setAttribute('cy',pt[1]);c.style.opacity=show?1:0;}
+ return (x)=>bez(a,c1,c2,b,x);
+}
+
+// ---------- keyframes ----------
+// [t, x, y, scale, opacity, rotY]
+const KA=[[0,540,980,.86,0,-14],[.7,540,980,.95,1,-8],[2.1,540,980,.95,1,-6],[2.8,300,1330,.6,1,12],[4.0,300,1330,.6,1,12],[4.6,180,1650,.5,0,12],
+ [12.1,180,1650,.5,0,12],[12.6,290,1460,.58,1,12],[14.0,290,1460,.58,1,12],[14.7,540,1000,.95,1,-6],[16.2,540,1000,.95,1,-6],[16.9,290,1290,.6,1,12],
+ [18.3,290,1290,.6,1,12],[19.1,540,1000,.98,1,-4],[20,540,990,1.0,1,-3],[20.01,540,990,1.0,0,-3],[33,540,990,1,0,0]];
+const KC=[[0,790,500,.6,0,-12],[2.2,790,500,.6,0,-12],[2.8,790,500,.6,1,-12],[4.0,790,500,.6,1,-12],[4.7,540,1210,.8,1,-2],[6.2,540,1210,.8,1,-2],[6.8,540,1400,.7,0,0],
+ [16.0,800,640,.58,0,-12],[16.7,800,640,.58,1,-12],[18.3,800,640,.58,1,-12],[19.0,980,420,.45,0,-12],
+ [26,540,1000,.86,0,-8],[26.6,540,1000,.92,1,-6],[28.2,540,1000,.92,1,-6],[28.9,330,1020,.78,1,8],[30,330,1020,.78,1,8],[30.6,540,860,.78,1,0],[33,540,840,.8,1,0]];
+function placePhone(el,v){const [x,y,s,o,ry]=v;el.style.opacity=o;el.style.transform=`translate(${x-200}px,${y-410}px) rotateY(${ry}deg) scale(${s})`;}
+const phoneTop=(v)=>[v[0],v[1]-410*v[2]*0.82];
+const phoneMid=(v,dy=0)=>[v[0],v[1]+dy*v[2]];
+
+let LANG='fa';
+function render(t){
+ // camera drift
+ const cam=document.getElementById('cam');
+ const drift=Math.sin(t*0.5)*6, zoom=1+0.012*Math.sin(t*0.35);
+ cam.style.transform=`translate(${drift}px,${Math.cos(t*0.4)*5}px) scale(${zoom})`;
+ ['g1','g2','g3'].forEach((id,k)=>{const g=document.getElementById(id);g.style.transform=`translate(${Math.sin(t*0.3+k)*30}px,${Math.cos(t*0.25+k*2)*24}px) rotate(${Math.sin(t*0.2+k)*4}deg)`;g.style.opacity=t>30.2?1-P(t,30.2,31):1});
+ const va=kf(KA,t), vc=kf(KC,t); placePhone(A,va); placePhone(C,vc);
+ // A screens
+ const listOn=t<6, planOn=t>=12;
+ Alist.style.opacity=listOn?1:0; Aplan.style.opacity=planOn?1:0;
+ // coach card highlight + request
+ const cards=Alist.querySelectorAll('.coachcard');
+ cards.forEach((c,k)=>{const on=k===1&&t>1.0; c.style.borderColor=on?'#F47B3B':'transparent'; c.style.transform=on?`scale(${1+0.04*ob(P(t,1.0,1.4))})`:'none'; c.style.boxShadow=on?'0 0 40px rgba(244,123,59,.35)':'none'; c.style.opacity=(k!==1&&t>1.0)?1-0.5*P(t,1.0,1.4):1;});
+ const rb=document.getElementById('reqBtn'); rb.style.transform=`translateY(${(1-ob(P(t,1.35,1.75)))*180}px) scale(${t>2.0&&t<2.25?0.92:1})`; rb.style.opacity=P(t,1.35,1.6);
+ // ripple taps (in world coords)
+ let rp=null;
+ const tap=(t0,pt)=>{if(t>t0&&t<t0+0.6){rp=[pt,P(t,t0,t0+0.6)];}};
+ tap(1.0,[va[0],va[1]+(-410+78+54+26+20+102+18+60)*va[2]]);
+ tap(2.0,[va[0],va[1]+(410-46-48-14)*va[2]]);
+ tap(15.9,[va[0],va[1]+(410-14-34-50-14)*va[2]]);
+ if(rp){const [pt,x]=rp;const r=30+90*x;ripple.style.opacity=1-x;ripple.style.width=ripple.style.height=2*r+'px';ripple.style.left=pt[0]-r+'px';ripple.style.top=pt[1]-r+'px';}else ripple.style.opacity=0;
+ // path 0: request A -> C
+ setPath(paths[0],phoneTop(va),[vc[0],vc[1]+60*vc[2]],io(P(t,2.5,3.2)),P(t,2.8,3.9),t<4.4?1:1-P(t,4.4,4.8),1);
+ // C home
+ Chome.style.opacity=(t<7)?1:0;
+ const rc=document.getElementById('reqCard'); rc.style.opacity=P(t,3.8,4.1); rc.style.transform=`scale(${0.8+0.2*ob(P(t,3.8,4.2))})`;
+ // profile panel
+ const pIn=ob(P(t,4.9,5.6)), pOut=P(t,6.3,6.8);
+ prof.style.opacity=P(t,4.9,5.2)*(1-pOut); prof.style.transform=`translateY(${(1-pIn)*140+pOut*-60}px) scale(${0.85+0.15*pIn}) rotateX(${(1-pIn)*18}deg)`;
+ prof.querySelectorAll('.prof-row').forEach((r,k)=>{const x=P(t,5.2+k*0.18,5.6+k*0.18);r.style.opacity=x;r.style.transform=`translateX(${(1-io(x))*-40}px)`;});
+ const lens=document.getElementById('lens'); const lx=P(t,5.5,6.3); lens.style.opacity=lx>0&&lx<1?1:0; lens.style.left=(140+520*io(lx))+'px'; lens.style.top=(250+Math.sin(lx*Math.PI*2)*70+120*lx)+'px';
+ // split decision
+ const sIn=ob(P(t,6.6,7.2));
+ const rejX=lerp(-300,290,sIn), accX=lerp(1380,790,sIn);
+ const rejFade=P(t,7.7,8.5);
+ rejC.style.left=(rejX-200)+'px'; rejC.style.top=(800+rejFade*160)+'px'; rejC.style.opacity=(t>6.6&&t<8.6?1:0)*(1-rejFade); rejC.style.filter=`grayscale(${rejFade}) blur(${rejFade*6}px)`;
+ const accMove=io(P(t,7.9,8.8)), accMorph=P(t,8.9,9.5);
+ accC.style.left=(lerp(accX,540,accMove)-200)+'px'; accC.style.top=lerp(800,700,accMove)+'px'; accC.style.opacity=(t>6.6?1:0)*(1-accMorph); accC.style.transform=`scale(${1+0.15*accMove+0.4*accMorph})`;
+ const rb1=rejC.querySelector('.badge'), ab1=accC.querySelector('.badge');
+ rb1.style.transform=`scale(${ob(P(t,7.15,7.5))})`; ab1.style.transform=`scale(${ob(P(t,7.4,7.75))})`;
+ // planner
+ const plIn=io(P(t,8.9,9.6)), plOut=io(P(t,12.0,12.6));
+ planner.style.opacity=P(t,8.9,9.3)*(1-plOut); planner.style.transform=`scale(${(0.6+0.4*plIn)*(1-0.7*plOut)}) translateY(${plOut*200}px) rotateX(${(1-plIn)*12}deg)`;
+ planner.querySelectorAll('.prow').forEach((r,k)=>{const x=P(t,9.8+k*0.45,10.2+k*0.45);r.style.opacity=x;r.style.transform=`translateY(${(1-ob(x))*40}px)`;});
+ const pen=document.getElementById('pen'); const pk=Math.min(3,Math.floor((t-9.8)/0.45)); const pph=cl(((t-9.8)/0.45)%1);
+ pen.style.opacity=t>9.8&&t<11.9?1:0; pen.style.left=(170+500*io(pph))+'px'; pen.style.top=(330+cl(pk,0,3)*134+64)+'px';
+ // doc travels to A
+ const dA=[640,1100], dB=phoneTop(va);
+ const f1=setPath(paths[1],[540,1080],[va[0],va[1]-120*va[2]],io(P(t,12.4,12.9)),0,t<14.3?(t>12.3?1:0):1-P(t,14.3,14.7),-1);
+ const dx=P(t,12.8,13.8); docEl.style.opacity=(t>12.3&&t<14)?1:0; const dp=f1(io(dx)); docEl.style.left=dp[0]+'px';docEl.style.top=dp[1]+'px'; docEl.style.transform=`scale(${t<12.8?ob(P(t,12.3,12.8)):1-0.5*dx})`;
+ // plan locked
+ const ab=document.getElementById('AplanBody'); const unlock=P(t,17.7,18.5);
+ ab.style.filter=`blur(${10*(1-unlock)}px)`; ab.style.opacity=0.55+0.45*unlock;
+ const lw=document.getElementById('lockWrap'); lw.style.opacity=t<18.2?1:1-P(t,18.2,18.8); lw.style.transform=`scale(${(t<14.2?ob(P(t,13.9,14.4)):1)*(1+0.15*P(t,18.2,18.8))})`;
+ const shk=lw.querySelector('.shk'); shk.style.transform=`translateY(${-4*io(P(t,17.7,18.1))}px) rotate(${-25*io(P(t,17.9,18.3))}deg)`; shk.style.transformOrigin='17px 12px';
+ const ps=document.getElementById('paySheet'); const psIn=ob(P(t,14.9,15.5)), psOut=io(P(t,16.4,16.9));
+ ps.style.transform=`translateY(${(1-psIn)*460+psOut*460}px)`;
+ const pb=document.getElementById('payBtn'); pb.style.background=t>15.95?'linear-gradient(135deg,#34D399,#16A34A)':''; pb.style.transform=`scale(${t>15.9&&t<16.1?0.93:1})`;
+ const play=document.getElementById('playBtn'); play.style.opacity=P(t,19.0,19.4); play.style.transform=`scale(${ob(P(t,19.0,19.5))})`;
+ // money A -> C wallet
+ Cwallet.style.opacity=(t>15.5)?1-P(t,31.0,31.2):0; Clogo.style.opacity=P(t,30.6,31.2);
+ const wfrom=[va[0],va[1]+150*va[2]], wto=[vc[0],vc[1]-20*vc[2]];
+ const f2=setPath(paths[2],wfrom,wto,io(P(t,16.8,17.3)),0,t<18.6?(t>16.7?1:0):1-P(t,18.6,19.0),1.2);
+ coins.forEach((c,k)=>{const x=P(t,17.0+k*0.18,17.8+k*0.18);c.style.opacity=x>0&&x<1?1:0;const p=f2(io(x));c.style.left=p[0]+'px';c.style.top=p[1]+'px';c.style.transform=`scale(${0.8+0.3*Math.sin(x*Math.PI)})`;});
+ const wi=document.getElementById('walletIco'); const wb=(t>17.8&&t<18.4)?Math.sin(P(t,17.8,18.4)*Math.PI):(t>27.4&&t<28.0?Math.sin(P(t,27.4,28.0)*Math.PI):0);
+ wi.style.transform=`scale(${1+0.18*wb})`; wi.style.boxShadow=wb>0?`0 0 ${60*wb}px rgba(244,123,59,.7)`:'none';
+ const notif=document.getElementById('notif'); const nIn=t<20?ob(P(t,17.9,18.3)):ob(P(t,26.6,27.0));
+ notif.style.transform=`translateY(${(1-nIn)*-220}px)`; notif.style.opacity=nIn;
+ document.getElementById('balFill').style.width=(t<20?40+25*io(P(t,17.9,18.5)):65+25*io(P(t,27.4,28.0)))+'%';
+ document.getElementById('newBar').style.height=(t<20?10:10+130*ob(P(t,27.5,28.1)))+'px';
+ // S6 falling coin
+ const fc=coins[0]; if(t>26.9&&t<27.6){const x=P(t,26.9,27.5);fc.style.opacity=1-P(t,27.45,27.6);fc.style.left=vc[0]+'px';fc.style.top=(vc[1]-420*vc[2]+x*330*vc[2])+'px';fc.style.transform='scale(1)';}
+ // coach character + connection
+ const cIn=ob(P(t,28.7,29.3)); coach.style.opacity=P(t,28.7,29.0)*(1-P(t,30.0,30.5)); coach.style.transform=`translateY(${(1-cIn)*80}px) scale(${0.9+0.1*cIn})`;
+ document.getElementById('spark').style.transform=`scale(${ob(P(t,29.2,29.6))}) rotate(${t*40}deg)`;
+ document.getElementById('spark2').style.transform=`scale(${ob(P(t,29.35,29.75))}) rotate(${-t*50}deg)`;
+ athMini.style.opacity=P(t,28.9,29.2)*(1-P(t,30.0,30.5)); athMini.style.transform=`scale(${ob(P(t,28.9,29.4))})`;
+ setPath(paths[3],[230,505],[700,940],io(P(t,29.1,29.7)),P(t,29.4,30.0),t<30?(t>29?1:0):1-P(t,30,30.4),0.6);
+ // final convergence
+ const fin=[[[-60,300],1],[[1140,380],-1],[[-60,1650],-1],[[1140,1750],1]];
+ fin.forEach(([o,b],k)=>{const g=paths[4+(k%3)]; if(k===3)return; setPath(g,o,[540,860],io(P(t,30.0+k*0.12,30.7+k*0.12)),P(t,30.3+k*0.12,30.9+k*0.12),t<30?0:(t<32?1:1-P(t,32,32.6)),b*0.8);});
+ // endcard
+ const ec=document.getElementById('endcard'); ec.style.opacity=P(t,31.0,31.6); ec.style.transform=`translateY(${(1-io(P(t,31.0,31.7)))*40}px)`;
+ document.getElementById('ecName').textContent= LANG==='fa'?'کمک مربی':'Komak Morabbi';
+ document.getElementById('ecName').style.direction= LANG==='fa'?'rtl':'ltr';
+ document.getElementById('ecTag').innerHTML= LANG==='fa'?'تو مربیگری کن، <b>زیرساختش با ما</b>':'Less management. <b>More coaching.</b>';
+ document.getElementById('ecTag').style.direction= LANG==='fa'?'rtl':'ltr';
+}
+window.render=render; window.setLang=(l)=>{LANG=l};
+render(0);
+</script></body></html>
